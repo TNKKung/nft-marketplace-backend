@@ -7,6 +7,7 @@ const { recoverPersonalSignature } = require("eth-sig-util");
 const serviceAccount = require("./serviceAccountKey.json");
 
 const app = express();
+app.use(express.json());
 const port = 4000;
 const isValidEthAddress = (address) => Web3.utils.isAddress(address);
 
@@ -15,6 +16,9 @@ app.use(cors());
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
+
+const db = admin.firestore();
+const dbNFT = db.collection("NFT");
 
 const makeId = (length) => {
   let result = "";
@@ -38,7 +42,7 @@ const getMessageToSign = async (req, res) => {
     }
 
     const randomString = makeId(20);
-    let messageToSign = `Login NFT Marketplace by address: ${address} Nonce: ${randomString}`;
+    let messageToSign = `Login NFT Marketplace by address: ${address}`;
 
     const user = await admin.firestore().collection("Users").doc(address).get();
 
@@ -48,7 +52,6 @@ const getMessageToSign = async (req, res) => {
       admin.firestore().collection("Users").doc(address).set(
         {
           address: address,
-          messageToSign,
         },
         {
           merge: true,
@@ -129,6 +132,23 @@ const getJWT = async (req, res) => {
 };
 
 app.get("/jwt", getJWT);
+
+app.post("/createNFT", async (req, res) => {
+  const id = req.body.owner;
+  const response = await dbNFT.doc().set(
+    {
+      ownerAddres: req.body.owner,
+      nameNFT: req.body.nameNFT,
+      description: req.body.description,
+      tokenId: req.body.tokenId,
+      category: req.body.category,
+    },
+    {
+      merge: true,
+    }
+  );
+  res.send(response);
+});
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
