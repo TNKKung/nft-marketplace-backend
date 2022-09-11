@@ -22,6 +22,20 @@ router.post("/", async (req, res) => {
   res.send(response);
 });
 
+router.get("/getNFTByOwner", async (req, res) => {
+  const storeN = await store.collection("NFTs").get();
+  const { address } = req.query;
+  let tempStore = [];
+  let storeOfOwner = [];
+  storeN.docs.map((doc) => tempStore.push(doc.data()));
+  for (let i = 0; i < tempStore.length; i++) {
+    if (tempStore[i].ownerAddres === address) {
+      storeOfOwner.push(tempStore[i]);
+    }
+  }
+  res.send(storeOfOwner);
+});
+
 router.get("/", (req, res) => {
   res.send("TTTT");
 });
