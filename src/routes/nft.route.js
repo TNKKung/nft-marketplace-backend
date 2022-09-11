@@ -36,6 +36,21 @@ router.get("/getNFTByOwner", async (req, res) => {
   res.send(storeOfOwner);
 });
 
+router.get("/getNFTByTokenId", async (req, res) => {
+  const storeN = await store.collection("NFTs").get();
+  const { tokenId } = req.query;
+  let tempStore = [];
+  let nftOfTokenId = [];
+  storeN.docs.map((doc) => tempStore.push(doc.data()));
+  for (let i = 0; i < tempStore.length; i++) {
+    if (tempStore[i].tokenId.toString() === tokenId) {
+      console.log(tempStore[i].tokenId);
+      nftOfTokenId.push(tempStore[i]);
+    }
+  }
+  res.send(nftOfTokenId);
+});
+
 router.get("/", (req, res) => {
   res.send("TTTT");
 });
