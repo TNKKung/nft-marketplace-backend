@@ -10,7 +10,7 @@ router.post("/", async (req, res) => {
   const returnStore = [];
   storeCollection.docs.map((doc) => returnStore.push(doc.data()));
   const response = await storeNFT.doc().set({
-    id: returnStore.length,
+    collectionId: returnStore.length,
     owner: req.body.owner,
     collectionName: req.body.collectionName,
     description: req.body.description,
@@ -40,14 +40,39 @@ router.get("/getCollectionById", async (req, res) => {
 router.get("/getCollectionByOwner", async (req, res) => {
   const { owner } = req.query;
   const storeCollection = await store.collection("Collections").get();
+
   const returnStore = [];
-  storeCollection.docs.map((doc) => returnStore.push(doc.data()));
+  const responseData = [];
+  storeCollection.docs.map((doc) =>
+    returnStore.push({ id: doc.id, ...doc.data() })
+  );
   for (let i = 0; i < returnStore.length; i++) {
-    if (returnStore[i].owner.toString() === owner) {
-      returnStore.push(returnStore[i]);
+    if (returnStore[i]["owner"] === owner) {
+      responseData.push(returnStore[i]);
     }
   }
-  res.send(returnStore);
+  res.send(responseData);
+});
+
+router.delete("/", async (req, res) => {
+  const { id } = req.query;
+  await store.collection("Collections").doc(id).delete();
+  res.send("delete success");
+});
+
+router.patch("/", async (req, res) => {
+  const data = await store.collection("Collections").doc(req.body.id).get();
+  if (!data.exists) {
+    console.log("No such document!");
+  } else {
+    console.log(data.data());
+    await store.collection("Collections").doc(req.body.id).set({
+      collectionId: data.data().collectionId,
+      owner: data.data().owner,
+      collectionName: req.body.collectionName,
+      description: req.body.description,
+    });
+  }
 });
 
 module.exports = router;
