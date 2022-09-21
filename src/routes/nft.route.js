@@ -14,6 +14,7 @@ router.post("/", async (req, res) => {
       description: req.body.description,
       tokenId: req.body.tokenId,
       category: req.body.category,
+      collection: req.body.collection,
     },
     {
       merge: true,
@@ -44,7 +45,6 @@ router.get("/getNFTByTokenId", async (req, res) => {
   storeN.docs.map((doc) => tempStore.push(doc.data()));
   for (let i = 0; i < tempStore.length; i++) {
     if (tempStore[i].tokenId.toString() === tokenId) {
-      console.log(tempStore[i].tokenId);
       nftOfTokenId.push(tempStore[i]);
     }
   }
