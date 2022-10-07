@@ -28,10 +28,19 @@ router.get("/", async (req, res) => {
 router.get("/getCollectionById", async (req, res) => {
   const { id } = req.query;
   const storeCollection = await store.collection("Collections").get();
+  const storeNFT = await store.collection("NFTs").get();
   const returnStore = [];
-  storeCollection.docs.map((doc) => returnStore.push(doc.data()));
+  const listNFT = [];
+  storeNFT.docs.map((doc) => {
+    if (doc.data().collectionId === id) {
+      listNFT.push(doc.data().tokenId);
+    }
+  });
+  storeCollection.docs.map((doc) =>
+    returnStore.push({ ...doc.data(), listNFT })
+  );
   for (let i = 0; i < returnStore.length; i++) {
-    if (returnStore[i].id.toString() === id) {
+    if (returnStore[i].collectionId === id) {
       res.send(returnStore[i]);
     }
   }
@@ -40,11 +49,17 @@ router.get("/getCollectionById", async (req, res) => {
 router.get("/getCollectionByOwner", async (req, res) => {
   const { owner } = req.query;
   const storeCollection = await store.collection("Collections").get();
-
+  const storeNFT = await store.collection("NFTs").get();
+  const listNFT = [];
+  storeNFT.docs.map((doc) => {
+    if (doc.data().collectionId === id) {
+      listNFT.push(doc.data().tokenId);
+    }
+  });
   const returnStore = [];
   const responseData = [];
   storeCollection.docs.map((doc) =>
-    returnStore.push({ id: doc.id, ...doc.data() })
+    returnStore.push({ id: doc.id, ...doc.data(), listNFT })
   );
   for (let i = 0; i < returnStore.length; i++) {
     if (returnStore[i]["owner"] === owner) {
