@@ -14,7 +14,7 @@ router.post("/", async (req, res) => {
       description: req.body.description,
       tokenId: req.body.tokenId,
       category: req.body.category,
-      collection: req.body.collection,
+      collectionId: req.body.collection,
     },
     {
       merge: true,
