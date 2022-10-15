@@ -58,17 +58,18 @@ router.get("/getCollectionByOwner", async (req, res) => {
   const { owner } = req.query;
   const storeCollection = await store.collection("Collections").get();
   const storeNFT = await store.collection("NFTs").get();
-  const listNFT = [];
-  storeNFT.docs.map((doc) => {
-    if (doc.data().collectionId === id) {
-      listNFT.push(doc.data().tokenId);
-    }
-  });
+
   const returnStore = [];
   const responseData = [];
-  storeCollection.docs.map((doc) =>
-    returnStore.push({ id: doc.id, ...doc.data(), listNFT })
-  );
+  storeCollection.docs.map((doc) => {
+    const listNFT = [];
+    storeNFT.docs.map((Doc) => {
+      if (Doc.data().collectionId === doc.data().collectionId) {
+        listNFT.push(Doc.data().tokenId);
+      }
+    });
+    returnStore.push({ id: doc.id, ...doc.data(), listNFT });
+  });
   for (let i = 0; i < returnStore.length; i++) {
     if (returnStore[i]["owner"] === owner) {
       responseData.push(returnStore[i]);
@@ -79,6 +80,20 @@ router.get("/getCollectionByOwner", async (req, res) => {
 
 router.delete("/", async (req, res) => {
   const { id } = req.query;
+  const storeNFT = await store.collection("NFTs").get();
+  storeNFT.docs.map(async (doc) => {
+    if (doc.data().collectionId === id) {
+      const info = {
+        ownerAddres: doc.data().ownerAddres,
+        nameNFT: doc.data().nameNFT,
+        description: doc.data().description,
+        tokenId: doc.data().tokenId,
+        category: doc.data().category,
+        collectionId: "",
+      };
+      await store.collection("NFTs").doc(doc.id).set(info);
+    }
+  });
   await store.collection("Collections").doc(id).delete();
   res.send("delete success");
 });
