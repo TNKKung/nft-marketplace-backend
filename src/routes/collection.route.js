@@ -6,22 +6,30 @@ const router = express.Router();
 const storeNFT = store.collection("Collections");
 
 router.post("/", async (req, res) => {
-  const storeCollection = await store.collection("Collections").get();
-  const returnStore = [];
-  storeCollection.docs.map((doc) => returnStore.push(doc.data()));
-  const response = await storeNFT.doc().set({
-    collectionId: returnStore.length,
+  const response = await storeNFT.add({
     owner: req.body.owner,
     collectionName: req.body.collectionName,
     description: req.body.description,
   });
-  res.send(response);
+  const data = await store.collection("Collections").doc(response.id).get();
+  if (!data.exists) {
+    console.log("No such document!");
+  } else {
+    const info = {
+      collectionId: response.id,
+      owner: data.data().owner,
+      collectionName: data.data().collectionName,
+      description: data.data().description,
+    };
+    await store.collection("Collections").doc(response.id).set(info);
+    res.send(info);
+  }
 });
 
 router.get("/", async (req, res) => {
   const storeCollection = await store.collection("Collections").get();
   const returnStore = [];
-  storeCollection.docs.map((doc) => returnStore.push(doc.data()));
+  storeCollection.docs.map((doc) => returnStore.push({ ...doc.data() }));
   res.send(returnStore);
 });
 
@@ -76,12 +84,14 @@ router.delete("/", async (req, res) => {
 });
 
 router.patch("/", async (req, res) => {
-  const data = await store.collection("Collections").doc(req.body.id).get();
+  const data = await store
+    .collection("Collections")
+    .doc(req.body.collectionId)
+    .get();
   if (!data.exists) {
     console.log("No such document!");
   } else {
-    console.log(data.data());
-    await store.collection("Collections").doc(req.body.id).set({
+    await store.collection("Collections").doc(req.body.collectionId).set({
       collectionId: data.data().collectionId,
       owner: data.data().owner,
       collectionName: req.body.collectionName,
