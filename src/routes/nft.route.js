@@ -51,8 +51,18 @@ router.get("/getNFTByTokenId", async (req, res) => {
   res.send(nftOfTokenId);
 });
 
-router.get("/", (req, res) => {
-  res.send("TTTT");
+router.patch("/", async (req, res) => {
+  const data = await store.doc(req.body.id).get();
+  if (!data.exists) {
+    console.log("No such document!");
+  } else {
+    await storeNFT.doc(req.body.tokenId).set({
+      collectionId: data.data().collectionId,
+      owner: data.data().owner,
+      collectionName: req.body.collectionName,
+      description: req.body.description,
+    });
+  }
 });
 
 module.exports = router;
