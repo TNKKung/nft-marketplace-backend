@@ -6,20 +6,20 @@ const router = express.Router();
 const storeNFT = store.collection("NFTs");
 
 router.post("/", async (req, res) => {
-  const id = req.body.owner;
-  const response = await storeNFT.doc().set(
-    {
-      ownerAddres: req.body.owner,
-      nameNFT: req.body.nameNFT,
-      description: req.body.description,
-      tokenId: req.body.tokenId,
-      category: req.body.category,
-      collectionId: req.body.collection,
-    },
-    {
-      merge: true,
-    }
-  );
+  const response = await storeNFT.add({
+    ownerAddres: req.body.owner,
+    nameNFT: req.body.nameNFT,
+    description: req.body.description,
+    category: req.body.category,
+    collectionId: req.body.collectionId,
+  });
+  await storeNFT.doc(response.id).set({
+    ownerAddres: req.body.owner,
+    nameNFT: req.body.nameNFT,
+    description: req.body.description,
+    category: req.body.category,
+    collectionId: req.body.collectionId,
+  });
   res.send(response);
 });
 
@@ -49,6 +49,12 @@ router.get("/getNFTByTokenId", async (req, res) => {
     }
   }
   res.send(nftOfTokenId);
+});
+
+router.delete("/", async (req, res) => {
+  const { id } = req.query;
+  await storeNFT.doc(id).delete();
+  res.send("delete success");
 });
 
 router.patch("/", async (req, res) => {
