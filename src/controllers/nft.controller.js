@@ -16,24 +16,24 @@ const getAllNFTs = catchAsync(async (req, res) => {
 const getNFTByOwnerController = catchAsync(async (req, res) => {
   const { address } = req.query;
   const response = await nftService.getNFTByOwnerService(address);
-  res.status(httpStatus).send({ response });
+  res.send({ response });
 });
 
 const getNFTByTokenIdController = catchAsync(async (req, res) => {
   const { tokenId } = req.query;
   const response = await nftService.getNFTByTokenId(tokenId);
-  res.status(httpStatus).send({ response });
+  res.send({ response });
 });
 
 const deleteNFTByTokenIdController = catchAsync(async (req, res) => {
   const { id } = req.query;
   const response = await nftService.deleteNFTByTokenId(id);
-  res.status(httpStatus).send({ response });
+  res.send({ response });
 });
 
 const updateCollectionOfNFTController = catchAsync(async (req, res) => {
   const response = await nftService.updateCollectionOfNft(req.body);
-  res.status(httpStatus).send({ response });
+  res.send({ response });
 });
 
 module.exports = {
