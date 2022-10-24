@@ -38,4 +38,10 @@ router.patch(
   nftController.updateCollectionOfNFTController
 );
 
+router.patch(
+  "/updateOwner",
+  validate(nftValidation.updateOwnerNFT),
+  nftController.updateOwnerNFTController
+);
+
 module.exports = router;
