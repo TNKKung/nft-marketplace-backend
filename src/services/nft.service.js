@@ -1,6 +1,14 @@
 const { store } = require("../config/firebase");
+const { ethers } = require("ethers");
+const dotenv = require("dotenv");
+const path = require("path");
+const joi = require("joi");
+
+const { getProvider } = require("../utils/provider");
+const config = require("../config/config");
 
 const storeNFT = store.collection("NFTs");
+dotenv.config({ path: path.join(__dirname, "../../.env") });
 
 const createNFTService = async (body) => {
   const response = await storeNFT.add({
@@ -17,6 +25,7 @@ const createNFTService = async (body) => {
 const getAllNFT = async () => {
   const NFTs = await storeNFT.get();
   const returnStore = [];
+
   NFTs.docs.map((doc) => returnStore.push({ ...doc.data() }));
   return returnStore;
 };
@@ -69,6 +78,33 @@ const updateCollectionOfNft = async (body) => {
   return "update new collectionId";
 };
 
+const updateOwnerNFT = async (body) => {
+  const data = await storeNFT.doc(body.id).get();
+  if (!data.exists) {
+    console.log("No such document!");
+  } else {
+    const provider = getProvider(11155111);
+
+    const signer = new ethers.Wallet(config.privateKey, provider);
+
+    const address = body.contract;
+    const abi = ["function ownerOf(uint256 tokenId) view returns (address)"];
+
+    const contract = new ethers.Contract(address, abi, signer);
+    const result = await contract.functions.ownerOf(data.data().tokenId);
+
+    await storeNFT.doc(body.id).set({
+      tokenId: data.data().tokenId,
+      collectionId: data.data().collectionId,
+      ownerAddres: result[0],
+      nameNFT: data.data().nameNFT,
+      description: data.data().description,
+      category: data.data().category,
+    });
+  }
+  return "update new owner";
+};
+
 module.exports = {
   createNFTService,
   getAllNFT,
@@ -76,4 +112,5 @@ module.exports = {
   getNFTByTokenId,
   deleteNFTByTokenId,
   updateCollectionOfNft,
+  updateOwnerNFT,
 };
