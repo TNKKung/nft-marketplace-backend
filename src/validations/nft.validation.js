@@ -34,6 +34,13 @@ const updateCollectionOfNft = {
   }),
 };
 
+const updateOwnerNFT = {
+  body: joi.object().keys({
+    id: joi.string().required(),
+    contract: joi.string().required(),
+  }),
+};
+
 const deleteNFTByTokenId = {
   query: joi.object().keys({
     id: joi.string().required(),
@@ -47,4 +54,5 @@ module.exports = {
   getNFTByTokenId,
   deleteNFTByTokenId,
   updateCollectionOfNft,
+  updateOwnerNFT,
 };
