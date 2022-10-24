@@ -36,6 +36,11 @@ const updateCollectionOfNFTController = catchAsync(async (req, res) => {
   res.send({ response });
 });
 
+const updateOwnerNFTController = catchAsync(async (req, res) => {
+  const response = await nftService.updateOwnerNFT(req.body);
+  res.send({ response });
+});
+
 module.exports = {
   createNFTController,
   getAllNFTs,
@@ -43,4 +48,5 @@ module.exports = {
   getNFTByTokenIdController,
   deleteNFTByTokenIdController,
   updateCollectionOfNFTController,
+  updateOwnerNFTController,
 };
