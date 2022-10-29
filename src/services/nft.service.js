@@ -2,7 +2,6 @@ const { store } = require("../config/firebase");
 const { ethers } = require("ethers");
 const dotenv = require("dotenv");
 const path = require("path");
-const joi = require("joi");
 
 const { getProvider } = require("../utils/provider");
 const config = require("../config/config");
@@ -24,10 +23,28 @@ const createNFTService = async (body) => {
 
 const getAllNFT = async () => {
   const NFTs = await storeNFT.get();
-  const returnStore = [];
+  const data = [];
+  const returnData = [];
+  const provider = getProvider(11155111);
 
-  NFTs.docs.map((doc) => returnStore.push({ ...doc.data() }));
-  return returnStore;
+  const signer = new ethers.Wallet(config.privateKey, provider);
+
+  const abi = ["function tokenURI(uint256 tokenId) view returns (string)"];
+
+  const contract = new ethers.Contract(
+    "0x1C2e4a65351c3C0968D2624a15b3B446E4fcee11",
+    abi,
+    signer
+  );
+  NFTs.docs.map((doc) => {
+    data.push({ ...doc.data() });
+  });
+
+  for (let i = 0; i < data.length; i++) {
+    const result = await contract.functions.tokenURI(data[i].tokenId);
+    returnData.push({ ...data[i], tokenURI: result[0] });
+  }
+  return returnData;
 };
 
 const getNFTByOwnerService = async (address) => {
