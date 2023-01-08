@@ -20,6 +20,7 @@ const loginMessage = async (address) => {
       admin.firestore().collection("Users").doc(address).set(
         {
           address: address,
+          messageToSign: messageToSign,
         },
         {
           merge: true,
@@ -42,13 +43,12 @@ const authJWT = async (address, signature) => {
 
     const [customToken, doc] = await Promise.all([
       admin.auth().createCustomToken(address),
-      admin.firestore().collection("users").doc(address).get(),
+      admin.firestore().collection("Users").doc(address).get(),
     ]);
 
     if (!doc.exists) {
       return { error: "invalid_message_to_sign" };
     }
-
     const { messageToSign } = doc.data();
 
     if (!messageToSign) {
@@ -62,7 +62,7 @@ const authJWT = async (address, signature) => {
     }
 
     // Delete messageToSign as it can only be used once
-    admin.firestore().collection("users").doc(address).set(
+    admin.firestore().collection("Users").doc(address).set(
       {
         messageToSign: null,
       },
