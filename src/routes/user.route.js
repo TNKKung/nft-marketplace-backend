@@ -24,6 +24,8 @@ router.post("/unfriendList", userController.unfriendListController);
 
 router.post("/addFavoriteNFT", userController.addFavoriteNFTController);
 
+router.post("/removeFavoriteNFT", userController.removeFavoriteNFTController);
+
 router.post("/editInfoUser", userController.editInfoUserController);
 
 router.post("/editImageProfile", userController.editImageProfileController);

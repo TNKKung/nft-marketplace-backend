@@ -35,6 +35,13 @@ const addFavoriteNFTController = catchAsync(async (req, res) => {
   res.send({ response });
 });
 
+const removeFavoriteNFTController = catchAsync(async (req, res) => {
+  const { address } = req.query;
+  const { tokenId } = req.body;
+  const response = await userService.removeFavoriteNFT(address, tokenId);
+  res.send({ response });
+});
+
 const editInfoUserController = catchAsync(async (req, res) => {
   const { address } = req.query;
   const response = await userService.editInfoUser(address, req.body);
@@ -64,6 +71,7 @@ module.exports = {
   addFriendListController,
   unfriendListController,
   addFavoriteNFTController,
+  removeFavoriteNFTController,
   editInfoUserController,
   editImageProfileController,
   editImageBackgroundController,

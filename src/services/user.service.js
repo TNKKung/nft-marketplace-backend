@@ -103,33 +103,32 @@ const addFavoriteNFT = async (address, tokenId) => {
   }
 };
 
-// const unfriendList = async (address, friendAddress) => {
-//   const data = await storeUsers.doc(address).get();
-//   if (!data.exists) {
-//     console.log("No such document!");
-//   } else {
-//     let tempStore = [];
-//     for (let i = 0; i < data.data().friendList.length; i++) {
-//       if (data.data().friendList[i] !== friendAddress) {
-//         tempStore.push(data.data().friendList[i]);
-//       }
-//     }
-//     console.log(tempStore);
-//     await storeUsers.doc(address).set({
-//       address: data.data().address,
-//       name: data.data().name,
-//       bio: data.data().bio,
-//       twitter: data.data().twitter,
-//       instagram: data.data().instagram,
-//       contact: data.data().contact,
-//       profileImage: data.data().profileImage,
-//       backgroundImage: data.data().backgroundImage,
-//       messageToSign: data.data().messageToSign,
-//       favoriteNFT: data.data().favoriteNFT,
-//       friendList: tempStore,
-//     });
-//   }
-// };
+const removeFavoriteNFT = async (address, tokenId) => {
+  const data = await storeUsers.doc(address).get();
+  if (!data.exists) {
+    console.log("No such document!");
+  } else {
+    let tempStore = [];
+    for (let i = 0; i < data.data().favoriteNFT.length; i++) {
+      if (data.data().favoriteNFT[i] !== tokenId) {
+        tempStore.push(data.data().favoriteNFT[i]);
+      }
+    }
+    await storeUsers.doc(address).set({
+      address: data.data().address,
+      name: data.data().name,
+      bio: data.data().bio,
+      twitter: data.data().twitter,
+      instagram: data.data().instagram,
+      contact: data.data().contact,
+      profileImage: data.data().profileImage,
+      backgroundImage: data.data().backgroundImage,
+      messageToSign: data.data().messageToSign,
+      favoriteNFT: tempStore,
+      friendList: data.data().friendList,
+    });
+  }
+};
 
 const editInfoUser = async (address, body) => {
   const data = await storeUsers.doc(address).get();
@@ -200,6 +199,7 @@ module.exports = {
   addFriendList,
   unfriendList,
   addFavoriteNFT,
+  removeFavoriteNFT,
   editInfoUser,
   editImageProfile,
   editImageBackground,
