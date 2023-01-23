@@ -16,11 +16,20 @@ const loginMessage = async (address) => {
 
     if (user.data() && user.data().messageToSign) {
       messageToSign = user.data().messageToSign;
-    } else {
+    }
+
+    if (!user.data()) {
       admin.firestore().collection("Users").doc(address).set(
         {
           address: address,
-          messageToSign: messageToSign,
+          name: address,
+          bio: "",
+          twitter: "",
+          instagram: "",
+          contact: "",
+          messageToSign: "",
+          friendList: [],
+          favoriteNFT: [],
         },
         {
           merge: true,
