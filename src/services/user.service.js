@@ -72,9 +72,29 @@ const addFavoriteNFT = async (address, tokenId) => {
   }
 };
 
+const editInfoUser = async (address, body) => {
+  const data = await storeUsers.doc(address).get();
+  if (!data.exists) {
+    console.log("No such document!");
+  } else {
+    await storeUsers.doc(address).set({
+      address: data.data().address,
+      name: body.name,
+      bio: body.bio,
+      twitter: body.twitter,
+      instagram: body.instagram,
+      contact: body.contact,
+      messageToSign: data.data().messageToSign,
+      favoriteNFT: data.data().favoriteNFT,
+      friendList: data.data().friendList,
+    });
+  }
+};
+
 module.exports = {
   getAllUsers,
   getUserByAddress,
   addFriendList,
   addFavoriteNFT,
+  editInfoUser,
 };

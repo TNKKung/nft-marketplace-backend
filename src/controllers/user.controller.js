@@ -28,9 +28,16 @@ const addFavoriteNFTController = catchAsync(async (req, res) => {
   res.send({ response });
 });
 
+const editInfoUserController = catchAsync(async (req, res) => {
+  const { address } = req.query;
+  const response = await userService.editInfoUser(address, req.body);
+  res.send({ response });
+});
+
 module.exports = {
   getAllUserController,
   getUserByAddressController,
   addFriendListController,
   addFavoriteNFTController,
+  editInfoUserController,
 };

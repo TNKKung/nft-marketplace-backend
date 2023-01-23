@@ -22,6 +22,8 @@ router.post("/addFriendList", userController.addFriendListController);
 
 router.post("/addFavoriteNFT", userController.addFavoriteNFTController);
 
+router.post("/editInfoUser", userController.editInfoUserController);
+
 router.post("/");
 
 module.exports = router;
