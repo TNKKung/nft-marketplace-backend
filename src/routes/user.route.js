@@ -20,10 +20,17 @@ router.get(
 
 router.post("/addFriendList", userController.addFriendListController);
 
+router.post("/unfriendList", userController.unfriendListController);
+
 router.post("/addFavoriteNFT", userController.addFavoriteNFTController);
 
 router.post("/editInfoUser", userController.editInfoUserController);
 
-router.post("/");
+router.post("/editImageProfile", userController.editImageProfileController);
+
+router.post(
+  "/editImageBackground",
+  userController.editImageBackgroundController
+);
 
 module.exports = router;

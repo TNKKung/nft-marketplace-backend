@@ -21,6 +21,13 @@ const addFriendListController = catchAsync(async (req, res) => {
   res.send({ response });
 });
 
+const unfriendListController = catchAsync(async (req, res) => {
+  const { address } = req.query;
+  const { friendAddress } = req.body;
+  const response = await userService.unfriendList(address, friendAddress);
+  res.send({ response });
+});
+
 const addFavoriteNFTController = catchAsync(async (req, res) => {
   const { address } = req.query;
   const { tokenId } = req.body;
@@ -34,10 +41,30 @@ const editInfoUserController = catchAsync(async (req, res) => {
   res.send({ response });
 });
 
+const editImageProfileController = catchAsync(async (req, res) => {
+  const { address } = req.query;
+  const { profileImage } = req.body;
+  const response = await userService.editImageProfile(address, profileImage);
+  res.send({ response });
+});
+
+const editImageBackgroundController = catchAsync(async (req, res) => {
+  const { address } = req.query;
+  const { backgroundImage } = req.body;
+  const response = await userService.editImageBackground(
+    address,
+    backgroundImage
+  );
+  res.send({ response });
+});
+
 module.exports = {
   getAllUserController,
   getUserByAddressController,
   addFriendListController,
+  unfriendListController,
   addFavoriteNFTController,
   editInfoUserController,
+  editImageProfileController,
+  editImageBackgroundController,
 };

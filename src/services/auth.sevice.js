@@ -28,6 +28,8 @@ const loginMessage = async (address) => {
           instagram: "",
           contact: "",
           messageToSign: "",
+          profileImage: "",
+          backgroundImage: "",
           friendList: [],
           favoriteNFT: [],
         },

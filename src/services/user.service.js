@@ -26,7 +26,6 @@ const getUserByAddress = async (address) => {
   let userOfAddress = [];
   storeUser.docs.map((doc) => tempStore.push(doc.data()));
   for (let i = 0; i < tempStore.length; i++) {
-    console.log();
     if (tempStore[i].address === address) {
       userOfAddress.push(tempStore[i]);
     }
@@ -46,9 +45,39 @@ const addFriendList = async (address, friendAddress) => {
       twitter: data.data().twitter,
       instagram: data.data().instagram,
       contact: data.data().contact,
+      profileImage: data.data().profileImage,
+      backgroundImage: data.data().backgroundImage,
       messageToSign: data.data().messageToSign,
       favoriteNFT: data.data().favoriteNFT,
       friendList: [...data.data().friendList, friendAddress],
+    });
+  }
+};
+
+const unfriendList = async (address, friendAddress) => {
+  const data = await storeUsers.doc(address).get();
+  if (!data.exists) {
+    console.log("No such document!");
+  } else {
+    let tempStore = [];
+    for (let i = 0; i < data.data().friendList.length; i++) {
+      if (data.data().friendList[i] !== friendAddress) {
+        tempStore.push(data.data().friendList[i]);
+      }
+    }
+    console.log(tempStore);
+    await storeUsers.doc(address).set({
+      address: data.data().address,
+      name: data.data().name,
+      bio: data.data().bio,
+      twitter: data.data().twitter,
+      instagram: data.data().instagram,
+      contact: data.data().contact,
+      profileImage: data.data().profileImage,
+      backgroundImage: data.data().backgroundImage,
+      messageToSign: data.data().messageToSign,
+      favoriteNFT: data.data().favoriteNFT,
+      friendList: tempStore,
     });
   }
 };
@@ -65,12 +94,42 @@ const addFavoriteNFT = async (address, tokenId) => {
       twitter: data.data().twitter,
       instagram: data.data().instagram,
       contact: data.data().contact,
+      profileImage: data.data().profileImage,
+      backgroundImage: data.data().backgroundImage,
       messageToSign: data.data().messageToSign,
       favoriteNFT: [...data.data().favoriteNFT, tokenId],
       friendList: data.data().friendList,
     });
   }
 };
+
+// const unfriendList = async (address, friendAddress) => {
+//   const data = await storeUsers.doc(address).get();
+//   if (!data.exists) {
+//     console.log("No such document!");
+//   } else {
+//     let tempStore = [];
+//     for (let i = 0; i < data.data().friendList.length; i++) {
+//       if (data.data().friendList[i] !== friendAddress) {
+//         tempStore.push(data.data().friendList[i]);
+//       }
+//     }
+//     console.log(tempStore);
+//     await storeUsers.doc(address).set({
+//       address: data.data().address,
+//       name: data.data().name,
+//       bio: data.data().bio,
+//       twitter: data.data().twitter,
+//       instagram: data.data().instagram,
+//       contact: data.data().contact,
+//       profileImage: data.data().profileImage,
+//       backgroundImage: data.data().backgroundImage,
+//       messageToSign: data.data().messageToSign,
+//       favoriteNFT: data.data().favoriteNFT,
+//       friendList: tempStore,
+//     });
+//   }
+// };
 
 const editInfoUser = async (address, body) => {
   const data = await storeUsers.doc(address).get();
@@ -84,6 +143,50 @@ const editInfoUser = async (address, body) => {
       twitter: body.twitter,
       instagram: body.instagram,
       contact: body.contact,
+      profileImage: data.data().profileImage,
+      backgroundImage: data.data().backgroundImage,
+      messageToSign: data.data().messageToSign,
+      favoriteNFT: data.data().favoriteNFT,
+      friendList: data.data().friendList,
+    });
+  }
+};
+
+const editImageProfile = async (address, image) => {
+  const data = await storeUsers.doc(address).get();
+  if (!data.exists) {
+    console.log("No such document!");
+  } else {
+    await storeUsers.doc(address).set({
+      address: data.data().address,
+      name: data.data().name,
+      bio: data.data().bio,
+      twitter: data.data().twitter,
+      instagram: data.data().instagram,
+      contact: data.data().contact,
+      profileImage: image,
+      backgroundImage: data.data().backgroundImage,
+      messageToSign: data.data().messageToSign,
+      favoriteNFT: data.data().favoriteNFT,
+      friendList: data.data().friendList,
+    });
+  }
+};
+
+const editImageBackground = async (address, image) => {
+  const data = await storeUsers.doc(address).get();
+  if (!data.exists) {
+    console.log("No such document!");
+  } else {
+    await storeUsers.doc(address).set({
+      address: data.data().address,
+      name: data.data().name,
+      bio: data.data().bio,
+      twitter: data.data().twitter,
+      instagram: data.data().instagram,
+      contact: data.data().contact,
+      profileImage: data.data().profileImage,
+      backgroundImage: image,
       messageToSign: data.data().messageToSign,
       favoriteNFT: data.data().favoriteNFT,
       friendList: data.data().friendList,
@@ -95,6 +198,9 @@ module.exports = {
   getAllUsers,
   getUserByAddress,
   addFriendList,
+  unfriendList,
   addFavoriteNFT,
   editInfoUser,
+  editImageProfile,
+  editImageBackground,
 };
