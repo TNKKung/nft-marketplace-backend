@@ -20,6 +20,13 @@ const loginMessage = async (address) => {
       admin.firestore().collection("Users").doc(address).set(
         {
           address: address,
+          name: address,
+          bio: "",
+          twitter: "",
+          instagram: "",
+          contact: "",
+          friendList: [],
+          favoriteNFT: [],
         },
         {
           merge: true,
