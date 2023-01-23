@@ -18,6 +18,10 @@ router.get(
   userController.getUserByAddressController
 );
 
+router.post("/addFriendList", userController.addFriendListController);
+
+router.post("/addFavoriteNFT", userController.addFavoriteNFTController);
+
 router.post("/");
 
 module.exports = router;

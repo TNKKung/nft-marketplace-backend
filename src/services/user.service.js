@@ -34,7 +34,47 @@ const getUserByAddress = async (address) => {
   return userOfAddress;
 };
 
+const addFriendList = async (address, friendAddress) => {
+  const data = await storeUsers.doc(address).get();
+  if (!data.exists) {
+    console.log("No such document!");
+  } else {
+    await storeUsers.doc(address).set({
+      address: data.data().address,
+      name: data.data().name,
+      bio: data.data().bio,
+      twitter: data.data().twitter,
+      instagram: data.data().instagram,
+      contact: data.data().contact,
+      messageToSign: data.data().messageToSign,
+      favoriteNFT: data.data().favoriteNFT,
+      friendList: [...data.data().friendList, friendAddress],
+    });
+  }
+};
+
+const addFavoriteNFT = async (address, tokenId) => {
+  const data = await storeUsers.doc(address).get();
+  if (!data.exists) {
+    console.log("No such document!");
+  } else {
+    await storeUsers.doc(address).set({
+      address: data.data().address,
+      name: data.data().name,
+      bio: data.data().bio,
+      twitter: data.data().twitter,
+      instagram: data.data().instagram,
+      contact: data.data().contact,
+      messageToSign: data.data().messageToSign,
+      favoriteNFT: [...data.data().favoriteNFT, tokenId],
+      friendList: data.data().friendList,
+    });
+  }
+};
+
 module.exports = {
   getAllUsers,
   getUserByAddress,
+  addFriendList,
+  addFavoriteNFT,
 };
