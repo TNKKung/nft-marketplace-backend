@@ -18,20 +18,45 @@ router.get(
   userController.getUserByAddressController
 );
 
-router.post("/addFriendList", userController.addFriendListController);
+router.post(
+  "/addFriendList",
+  validate(userValidation.addFriendList),
+  userController.addFriendListController
+);
 
-router.post("/unfriendList", userController.unfriendListController);
+router.post(
+  "/unfriendList",
+  validate(userValidation.unfriendList),
+  userController.unfriendListController
+);
 
-router.post("/addFavoriteNFT", userController.addFavoriteNFTController);
+router.post(
+  "/addFavoriteNFT",
+  validate(userValidation.addFavoriteNFT),
+  userController.addFavoriteNFTController
+);
 
-router.post("/removeFavoriteNFT", userController.removeFavoriteNFTController);
+router.post(
+  "/removeFavoriteNFT",
+  validate(userValidation.removeFavoriteNFT),
+  userController.removeFavoriteNFTController
+);
 
-router.post("/editInfoUser", userController.editInfoUserController);
+router.post(
+  "/editInfoUser",
+  validate(userValidation.editInfoUser),
+  userController.editInfoUserController
+);
 
-router.post("/editImageProfile", userController.editImageProfileController);
+router.post(
+  "/editImageProfile",
+  validate(userValidation.editImageProfile),
+  userController.editImageProfileController
+);
 
 router.post(
   "/editImageBackground",
+  validate(userValidation.editImageBackground),
   userController.editImageBackgroundController
 );
 
