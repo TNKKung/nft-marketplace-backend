@@ -27,9 +27,9 @@ const loginMessage = async (address) => {
           twitter: "",
           instagram: "",
           contact: "",
-          messageToSign: "",
           profileImage: "",
           backgroundImage: "",
+          messageToSign,
           friendList: [],
           favoriteNFT: [],
         },
@@ -60,7 +60,11 @@ const authJWT = async (address, signature) => {
     if (!doc.exists) {
       return { error: "invalid_message_to_sign" };
     }
+
+    console.log(doc.data());
     const { messageToSign } = doc.data();
+
+    console.log(messageToSign);
 
     if (!messageToSign) {
       return { error: "invalid_message_to_sign" };
