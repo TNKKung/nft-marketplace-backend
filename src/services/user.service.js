@@ -82,7 +82,7 @@ const unfriendList = async (address, friendAddress) => {
   }
 };
 
-const addFavoriteNFT = async (address, tokenId) => {
+const addFavoriteNFT = async (address, body) => {
   const data = await storeUsers.doc(address).get();
   if (!data.exists) {
     console.log("No such document!");
@@ -97,7 +97,14 @@ const addFavoriteNFT = async (address, tokenId) => {
       profileImage: data.data().profileImage,
       backgroundImage: data.data().backgroundImage,
       messageToSign: data.data().messageToSign,
-      favoriteNFT: [...data.data().favoriteNFT, tokenId],
+      favoriteNFT: [
+        ...data.data().favoriteNFT,
+        {
+          tokenId: body.tokenId,
+          nameNFT: body.nameNFT,
+          category: body.category,
+        },
+      ],
       friendList: data.data().friendList,
     });
   }

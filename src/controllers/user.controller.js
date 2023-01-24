@@ -30,8 +30,7 @@ const unfriendListController = catchAsync(async (req, res) => {
 
 const addFavoriteNFTController = catchAsync(async (req, res) => {
   const { address } = req.query;
-  const { tokenId } = req.body;
-  const response = await userService.addFavoriteNFT(address, tokenId);
+  const response = await userService.addFavoriteNFT(address, req.body);
   res.send({ response });
 });
 
