@@ -33,12 +33,7 @@ const addFavoriteNFT = {
     address: joi.string().required(),
   }),
   body: joi.object().keys({
-    tokenId: joi.string().required(),
-    nameNFT: joi.string().required(),
-    category: joi.object().required().keys({
-      label: joi.string().required(),
-      value: joi.string().required(),
-    }),
+    tokenId: joi.number().required(),
   }),
 };
 

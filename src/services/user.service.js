@@ -87,6 +87,17 @@ const addFavoriteNFT = async (address, body) => {
   if (!data.exists) {
     console.log("No such document!");
   } else {
+    const storeNFTs = await store.collection("NFTs").get();
+    const dataNFTs = [];
+    storeNFTs.docs.map((doc) => {
+      dataNFTs.push({ ...doc.data() });
+    });
+    let NFT;
+    for (let i = 0; i < dataNFTs.length; i++) {
+      if (dataNFTs[i].tokenId === body.tokenId) {
+        NFT = dataNFTs[i];
+      }
+    }
     await storeUsers.doc(address).set({
       address: data.data().address,
       name: data.data().name,
@@ -101,8 +112,8 @@ const addFavoriteNFT = async (address, body) => {
         ...data.data().favoriteNFT,
         {
           tokenId: body.tokenId,
-          nameNFT: body.nameNFT,
-          category: body.category,
+          nameNFT: NFT.nameNFT,
+          category: NFT.category,
         },
       ],
       friendList: data.data().friendList,
