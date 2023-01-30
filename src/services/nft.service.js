@@ -10,6 +10,22 @@ const storeNFT = store.collection("NFTs");
 dotenv.config({ path: path.join(__dirname, "../../.env") });
 
 const createNFTService = async (body) => {
+  const provider = getProvider(11155111);
+
+  const abi = [
+    "function collaboratotOf(uint256 tokenId) view returns (address[])",
+  ];
+
+  const signer = new ethers.Wallet(config.privateKey, provider);
+
+  const contract = new ethers.Contract(
+    "0x1C2e4a65351c3C0968D2624a15b3B446E4fcee11",
+    abi,
+    signer
+  );
+
+  const result = await contract.functions.collaboratotOf(body.tokenId);
+
   const response = await storeNFT.add({
     ownerAddres: body.ownerAddres,
     nameNFT: body.nameNFT,
@@ -17,6 +33,7 @@ const createNFTService = async (body) => {
     category: body.category,
     collectionId: body.collectionId,
     tokenId: body.tokenId,
+    createdCollaborator: result[0],
   });
   return response;
 };
