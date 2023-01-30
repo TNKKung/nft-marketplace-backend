@@ -42,7 +42,7 @@ const removeFavoriteNFT = {
     address: joi.string().required(),
   }),
   body: joi.object().keys({
-    tokenId: joi.string().required(),
+    tokenId: joi.number().required(),
   }),
 };
 
