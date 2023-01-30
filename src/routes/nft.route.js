@@ -44,4 +44,8 @@ router.patch(
   nftController.updateOwnerNFTController
 );
 
+router.patch("/listingForSale", nftController.listingForSaleController);
+
+router.patch("/unlistingForSale", nftController.unlistingForSaleController);
+
 module.exports = router;

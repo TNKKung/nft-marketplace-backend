@@ -31,6 +31,16 @@ const deleteNFTByTokenIdController = catchAsync(async (req, res) => {
   res.send({ response });
 });
 
+const listingForSaleController = catchAsync(async (req, res) => {
+  const response = await nftService.listingForSale(req.body.id);
+  res.send({ response });
+});
+
+const unlistingForSaleController = catchAsync(async (req, res) => {
+  const response = await nftService.unlistingForSale(req.body.id);
+  res.send({ response });
+});
+
 const updateCollectionOfNFTController = catchAsync(async (req, res) => {
   const response = await nftService.updateCollectionOfNft(req.body);
   res.send({ response });
@@ -49,4 +59,6 @@ module.exports = {
   deleteNFTByTokenIdController,
   updateCollectionOfNFTController,
   updateOwnerNFTController,
+  listingForSaleController,
+  unlistingForSaleController,
 };

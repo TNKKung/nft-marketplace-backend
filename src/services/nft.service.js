@@ -34,6 +34,7 @@ const createNFTService = async (body) => {
     collectionId: body.collectionId,
     tokenId: body.tokenId,
     createdCollaborator: result[0],
+    statusSale: false,
   });
   return response;
 };
@@ -109,6 +110,44 @@ const deleteNFTByTokenId = async (tokenId) => {
   return "delete NFT Success";
 };
 
+const listingForSale = async (id) => {
+  const data = await storeNFT.doc(id).get();
+  if (!data.exists) {
+    console.log("No such document!");
+  } else {
+    await storeNFT.doc(id).set({
+      tokenId: data.data().tokenId,
+      collectionId: data.data().collectionId,
+      ownerAddres: data.data().ownerAddres,
+      nameNFT: data.data().nameNFT,
+      description: data.data().description,
+      category: data.data().category,
+      createdCollaborator: data.data().createdCollaborator,
+      statusSale: true,
+    });
+  }
+  return "listing for sale";
+};
+
+const unlistingForSale = async (id) => {
+  const data = await storeNFT.doc(id).get();
+  if (!data.exists) {
+    console.log("No such document!");
+  } else {
+    await storeNFT.doc(id).set({
+      tokenId: data.data().tokenId,
+      collectionId: data.data().collectionId,
+      ownerAddres: data.data().ownerAddres,
+      nameNFT: data.data().nameNFT,
+      description: data.data().description,
+      category: data.data().category,
+      createdCollaborator: data.data().createdCollaborator,
+      statusSale: false,
+    });
+  }
+  return "unlisting for sale";
+};
+
 const updateCollectionOfNft = async (body) => {
   const data = await storeNFT.doc(body.id).get();
   if (!data.exists) {
@@ -122,6 +161,7 @@ const updateCollectionOfNft = async (body) => {
       description: data.data().description,
       category: data.data().category,
       createdCollaborator: data.data().createdCollaborator,
+      statusSale: data.data().statusSale,
     });
   }
   return "update new collectionId";
@@ -150,6 +190,7 @@ const updateOwnerNFT = async (body) => {
       description: data.data().description,
       category: data.data().category,
       createdCollaborator: data.data().createdCollaborator,
+      statusSale: data.data().statusSale,
     });
   }
   return "update new owner";
@@ -163,4 +204,6 @@ module.exports = {
   deleteNFTByTokenId,
   updateCollectionOfNft,
   updateOwnerNFT,
+  listingForSale,
+  unlistingForSale,
 };
