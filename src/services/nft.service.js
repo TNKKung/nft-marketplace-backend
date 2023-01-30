@@ -121,6 +121,7 @@ const updateCollectionOfNft = async (body) => {
       nameNFT: data.data().nameNFT,
       description: data.data().description,
       category: data.data().category,
+      createdCollaborator: data.data().createdCollaborator,
     });
   }
   return "update new collectionId";
@@ -148,6 +149,7 @@ const updateOwnerNFT = async (body) => {
       nameNFT: data.data().nameNFT,
       description: data.data().description,
       category: data.data().category,
+      createdCollaborator: data.data().createdCollaborator,
     });
   }
   return "update new owner";
