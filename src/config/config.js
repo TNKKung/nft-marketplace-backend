@@ -18,4 +18,8 @@ if (error) {
   throw new Error(`Config validation error: ${error.message}`);
 }
 
-module.exports = { port: 4000, privateKey: env.PRIVATE_KEY };
+module.exports = {
+  port: 4000,
+  privateKey: env.PRIVATE_KEY,
+  jwtSecretKey: env.JWT_SECRET_KET,
+};
