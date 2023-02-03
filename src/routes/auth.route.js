@@ -1,6 +1,6 @@
 const express = require("express");
 
-const validate = require("../middlewares/validate");
+const { jwtValidate, validate } = require("../middlewares");
 const { authValidation } = require("../validations");
 const { authController } = require("../controllers");
 
@@ -16,6 +16,13 @@ router.get(
   "/jwt",
   validate(authValidation.authJWT),
   authController.authJWTController
+);
+
+router.get(
+  "/requestAccessToken",
+  jwtValidate,
+  validate(authValidation.requestAccessToken),
+  authController.requestAccessToken
 );
 
 module.exports = router;

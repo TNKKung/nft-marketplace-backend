@@ -14,4 +14,14 @@ const authJWTController = catchAsync(async (req, res) => {
   res.send({ response });
 });
 
-module.exports = { messageController, authJWTController };
+const requestAccessToken = catchAsync(async (req, res) => {
+  const { address } = req.query;
+  const response = await authService.requestAccessToken(address);
+  res.send({ response });
+});
+
+module.exports = {
+  messageController,
+  authJWTController,
+  requestAccessToken,
+};

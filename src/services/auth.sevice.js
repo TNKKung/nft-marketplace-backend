@@ -1,7 +1,14 @@
-const { admin } = require("../config/firebase");
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+const path = require("path");
 
+const { admin } = require("../config/firebase");
+const config = require("../config/config");
 const { isValidEthAddress } = require("../utils/addressHelper");
 const { isValidSignature } = require("../utils/signatureHelper");
+const { jwtGenerate, jwtRefreshTokenGenerate } = require("../utils/jwtHelper");
+
+dotenv.config({ path: path.join(__dirname, "../../.env") });
 
 const loginMessage = async (address) => {
   try {
@@ -16,9 +23,7 @@ const loginMessage = async (address) => {
 
     if (user.data() && user.data().messageToSign) {
       messageToSign = user.data().messageToSign;
-    }
-
-    if (!user.data()) {
+    } else {
       admin.firestore().collection("Users").doc(address).set(
         {
           address: address,
@@ -52,8 +57,9 @@ const authJWT = async (address, signature) => {
       return { error: "invalid_parameters" };
     }
 
-    const [customToken, doc] = await Promise.all([
-      admin.auth().createCustomToken(address),
+    const [accessToken, refreshToken, doc] = await Promise.all([
+      jwtGenerate(address),
+      jwtRefreshTokenGenerate(address),
       admin.firestore().collection("Users").doc(address).get(),
     ]);
 
@@ -83,11 +89,25 @@ const authJWT = async (address, signature) => {
       }
     );
 
-    return { customToken, error: null };
+    return { accessToken, refreshToken, error: null };
   } catch (err) {
     console.log("Error:", err);
     return { error: "server_error" };
   }
 };
 
-module.exports = { loginMessage, authJWT };
+const requestAccessToken = async (address) => {
+  try {
+    if (!isValidEthAddress(address)) {
+      return { error: "invalid_parameters" };
+    }
+    const [accessToken] = [jwtGenerate(address)];
+
+    return { accessToken, error: null };
+  } catch (err) {
+    console.log("Error:", err);
+    return { error: "server_error" };
+  }
+};
+
+module.exports = { loginMessage, authJWT, requestAccessToken };

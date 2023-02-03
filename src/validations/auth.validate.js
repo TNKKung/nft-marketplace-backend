@@ -13,4 +13,10 @@ const authJWT = {
   }),
 };
 
-module.exports = { loginMessage, authJWT };
+const requestAccessToken = {
+  query: joi.object().keys({
+    address: joi.string().required(),
+  }),
+};
+
+module.exports = { loginMessage, authJWT, requestAccessToken };
