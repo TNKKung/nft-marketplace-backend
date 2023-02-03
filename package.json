@@ -21,6 +21,7 @@
     "firebase-admin": "^10.0.0",
     "http-status": "^1.5.3",
     "joi": "^17.6.3",
+    "jsonwebtoken": "^9.0.0",
     "path": "^0.12.7",
     "web3": "^1.7.5"
   },
