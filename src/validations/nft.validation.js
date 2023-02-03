@@ -27,6 +27,18 @@ const getNFTByTokenId = {
   }),
 };
 
+const listingForSale = {
+  body: joi.object().keys({
+    id: joi.string().required(),
+  }),
+};
+
+const unlistingForSale = {
+  body: joi.object().keys({
+    id: joi.string().required(),
+  }),
+};
+
 const updateCollectionOfNft = {
   body: joi.object().keys({
     id: joi.string().required(),
@@ -53,6 +65,8 @@ module.exports = {
   getNFTByOwner,
   getNFTByTokenId,
   deleteNFTByTokenId,
+  listingForSale,
+  unlistingForSale,
   updateCollectionOfNft,
   updateOwnerNFT,
 };
