@@ -21,7 +21,7 @@ const loginMessage = async (address) => {
 
     const user = await admin.firestore().collection("Users").doc(address).get();
 
-    if (user.data() && user.data().messageToSign) {
+    if (user.data()) {
       messageToSign = user.data().messageToSign;
     } else {
       admin.firestore().collection("Users").doc(address).set(
@@ -79,15 +79,15 @@ const authJWT = async (address, signature) => {
       return { error: "invalid_signature" };
     }
 
-    // Delete messageToSign as it can only be used once
-    admin.firestore().collection("Users").doc(address).set(
-      {
-        messageToSign: null,
-      },
-      {
-        merge: true,
-      }
-    );
+    // // Delete messageToSign as it can only be used once
+    // admin.firestore().collection("Users").doc(address).set(
+    //   {
+    //     messageToSign: null,
+    //   },
+    //   {
+    //     merge: true,
+    //   }
+    // );
 
     return { accessToken, refreshToken, error: null };
   } catch (err) {
