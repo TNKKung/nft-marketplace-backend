@@ -6,13 +6,6 @@ const { nftController } = require("../controllers");
 
 const router = express.Router();
 
-router.post(
-  "/",
-  jwtValidate,
-  validate(nftValidation.createNFT),
-  nftController.createNFTController
-);
-
 router.get("/", validate(nftValidation.getAllNFT), nftController.getAllNFTs);
 
 router.get(
@@ -25,6 +18,19 @@ router.get(
   "/getNFTByTokenId",
   validate(nftValidation.getNFTByTokenId),
   nftController.getNFTByTokenIdController
+);
+
+router.post(
+  "/",
+  jwtValidate,
+  validate(nftValidation.createNFT),
+  nftController.createNFTController
+);
+
+router.post(
+  "/addTransactionHash",
+  // jwtValidate,
+  nftController.addTransactionHashController
 );
 
 router.delete(

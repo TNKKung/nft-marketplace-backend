@@ -124,6 +124,7 @@ const listingForSale = async (id) => {
       description: data.data().description,
       category: data.data().category,
       createdCollaborator: data.data().createdCollaborator,
+      transactionHash: data.data().transactionHash,
       statusSale: true,
     });
   }
@@ -143,6 +144,7 @@ const unlistingForSale = async (id) => {
       description: data.data().description,
       category: data.data().category,
       createdCollaborator: data.data().createdCollaborator,
+      transactionHash: data.data().transactionHash,
       statusSale: false,
     });
   }
@@ -162,10 +164,31 @@ const updateCollectionOfNft = async (body) => {
       description: data.data().description,
       category: data.data().category,
       createdCollaborator: data.data().createdCollaborator,
+      transactionHash: data.data().transactionHash,
       statusSale: data.data().statusSale,
     });
   }
   return "update new collectionId";
+};
+
+const addTransactionHash = async (body) => {
+  const data = await storeNFT.doc(body.id).get();
+  if (!data.exists) {
+    console.log("No such document!");
+  } else {
+    await storeNFT.doc(body.id).set({
+      tokenId: data.data().tokenId,
+      collectionId: data.data().collectionId,
+      ownerAddres: data.data().ownerAddres,
+      nameNFT: data.data().nameNFT,
+      description: data.data().description,
+      category: data.data().category,
+      createdCollaborator: data.data().createdCollaborator,
+      transactionHash: [...data.data().transactionHash, body.transactionHash],
+      statusSale: data.data().statusSale,
+    });
+  }
+  return "add transaction hash complete";
 };
 
 const updateOwnerNFT = async (body) => {
@@ -191,6 +214,7 @@ const updateOwnerNFT = async (body) => {
       description: data.data().description,
       category: data.data().category,
       createdCollaborator: data.data().createdCollaborator,
+      transactionHash: data.data().transactionHash,
       statusSale: data.data().statusSale,
     });
   }
@@ -207,4 +231,5 @@ module.exports = {
   updateOwnerNFT,
   listingForSale,
   unlistingForSale,
+  addTransactionHash,
 };
