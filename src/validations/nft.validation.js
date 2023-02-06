@@ -8,6 +8,7 @@ const createNFT = {
     category: joi.array().required(),
     collectionId: joi.string().required(),
     tokenId: joi.number().required(),
+    transactionHash: joi.string().required(),
   }),
 };
 

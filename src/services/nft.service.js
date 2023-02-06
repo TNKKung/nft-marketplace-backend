@@ -33,6 +33,7 @@ const createNFTService = async (body) => {
     category: body.category,
     collectionId: body.collectionId,
     tokenId: body.tokenId,
+    transactionHash: [body.transactionHash],
     createdCollaborator: result[0],
     statusSale: false,
   });
