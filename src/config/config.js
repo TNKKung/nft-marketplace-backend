@@ -21,5 +21,6 @@ if (error) {
 module.exports = {
   port: 4000,
   privateKey: env.PRIVATE_KEY,
-  jwtSecretKey: env.JWT_SECRET_KET,
+  jwtSecretKey: env.JWT_SECRET_KEY,
+  moralisApiKey: env.MORALIS_API_KEY,
 };
