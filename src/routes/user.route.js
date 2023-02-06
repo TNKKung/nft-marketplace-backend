@@ -8,14 +8,12 @@ const router = express.Router();
 
 router.get(
   "/",
-  jwtValidate,
   validate(userValidation.getAllUsers),
   userController.getAllUserController
 );
 
 router.get(
   "/getUserByAddress",
-  jwtValidate,
   validate(userValidation.getUserByAddress),
   userController.getUserByAddressController
 );
@@ -51,7 +49,6 @@ router.post(
 router.post(
   "/editInfoUser",
   jwtValidate,
-  validate(userValidation.editInfoUser),
   userController.editInfoUserController
 );
 

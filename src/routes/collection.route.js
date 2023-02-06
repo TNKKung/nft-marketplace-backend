@@ -15,21 +15,18 @@ router.post(
 
 router.get(
   "/",
-  jwtValidate,
   validate(collectionValidation.getAllCollection),
   collectionController.getAllCollectionController
 );
 
 router.get(
   "/getCollectionById",
-  jwtValidate,
   validate(collectionValidation.getCollectionById),
   collectionController.getCollectionByIdController
 );
 
 router.get(
   "/getCollectionByOwner",
-  jwtValidate,
   validate(collectionValidation.getCollectionByOwner),
   collectionController.getCollectionByOwnerController
 );
