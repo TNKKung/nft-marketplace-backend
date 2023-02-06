@@ -2,9 +2,13 @@ const { store } = require("../config/firebase");
 const { ethers } = require("ethers");
 const dotenv = require("dotenv");
 const path = require("path");
+const Web3 = require("web3");
+// const Moralis = require("moralis").default;
+// const { EvmChain } = require("@moralisweb3/common-evm-utils");
 
 const { getProvider } = require("../utils/provider");
 const config = require("../config/config");
+const abi = require("../config/abi.json");
 
 const storeNFT = store.collection("NFTs");
 dotenv.config({ path: path.join(__dirname, "../../.env") });
@@ -64,6 +68,55 @@ const getAllNFT = async () => {
     returnData.push({ ...data[i], tokenURI: result[0] });
   }
   return returnData;
+};
+
+const getAllTransaction = async (id) => {
+  // await Moralis.start({
+  //   apiKey: config.moralisApiKey,
+  //   // ...and any other configuration
+  // });
+  // const address = "0xDCfC2c24585328b905d06Fa15739163f01828FEb";
+  // const chain = EvmChain.SEPOLIA;
+  // const response = await Moralis.EvmApi.events.getContractLogs({
+  //   address: address,
+  //   chain: chain,
+  // });
+  // console.log(response.toJSON());
+  const NFTs = await storeNFT.doc(id).get();
+
+  let temp = [];
+  const provider = getProvider(11155111);
+  const web3 = new Web3(
+    new Web3.providers.HttpProvider("https://rpc.sepolia.online/")
+  );
+
+  for (let i = 0; i < NFTs.data().transactionHash.length; i += 1) {
+    const hexHash = NFTs.data().transactionHash[i];
+    const transactionReceipts = await provider.getTransactionReceipt(hexHash);
+    const topic = transactionReceipts.logs[0].topics[0];
+    for (const event of abi) {
+      if (event.type !== "event") {
+        continue;
+      }
+      const eventSignature = web3.eth.abi.encodeEventSignature(event);
+      if (topic === eventSignature) {
+        // Decode the log data using the event definition
+        const eventData = web3.eth.abi.decodeLog(
+          event.inputs,
+          transactionReceipts.logs[0].data,
+          transactionReceipts.logs[0].topics.slice(1)
+        );
+        // Use the decoded data as needed
+        console.log(`Matched event: ${event.name}`);
+        console.log("Event data:", eventData);
+
+        temp.push({ event: event.name, eventData: eventData });
+      }
+    }
+  }
+  console.log(temp);
+
+  return temp;
 };
 
 const getNFTByOwnerService = async (address) => {
@@ -232,4 +285,5 @@ module.exports = {
   listingForSale,
   unlistingForSale,
   addTransactionHash,
+  getAllTransaction,
 };
