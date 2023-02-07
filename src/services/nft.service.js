@@ -87,13 +87,22 @@ const getAllTransaction = async (id) => {
   let temp = [];
   const provider = getProvider(11155111);
   const web3 = new Web3(
-    new Web3.providers.HttpProvider("https://rpc.sepolia.online/")
+    new Web3.providers.HttpProvider("https://rpc2.sepolia.org/ ")
   );
 
   for (let i = 0; i < NFTs.data().transactionHash.length; i += 1) {
     const hexHash = NFTs.data().transactionHash[i];
     const transactionReceipts = await provider.getTransactionReceipt(hexHash);
     const topic = transactionReceipts.logs[0].topics[0];
+
+    const tx = await web3.eth.getTransaction(hexHash);
+    const block = await web3.eth.getBlock(tx.blockNumber);
+    console.log("timestamp :", block.timestamp);
+
+    const date = new Date(block.timestamp * 1000);
+    const formatDate = date.toLocaleDateString();
+    const formatTime = date.toLocaleTimeString();
+
     for (const event of abi) {
       if (event.type !== "event") {
         continue;
@@ -107,10 +116,15 @@ const getAllTransaction = async (id) => {
           transactionReceipts.logs[0].topics.slice(1)
         );
         // Use the decoded data as needed
-        console.log(`Matched event: ${event.name}`);
-        console.log("Event data:", eventData);
+        // console.log(`Matched event: ${event.name}`);
+        // console.log("Event data:", eventData);
 
-        temp.push({ event: event.name, eventData: eventData });
+        temp.push({
+          event: event.name,
+          eventData: eventData,
+          date: formatDate,
+          time: formatTime,
+        });
       }
     }
   }
