@@ -10,7 +10,9 @@ const { getProvider } = require("../utils/provider");
 const config = require("../config/config");
 const abi = require("../config/abi.json");
 
-const storeNFT = store.collection("NFTs");
+const storeNFTs = store.collection("NFTs");
+const storeUsers = store.collection("Users");
+
 dotenv.config({ path: path.join(__dirname, "../../.env") });
 
 const createNFTService = async (body) => {
@@ -28,24 +30,56 @@ const createNFTService = async (body) => {
     signer
   );
 
-  const result = await contract.functions.collaboratotOf(body.tokenId);
+  const {
+    tokenId,
+    ownerAddres,
+    nameNFT,
+    description,
+    category,
+    collectionId,
+    transactionHash,
+  } = body;
 
-  const response = await storeNFT.add({
-    ownerAddres: body.ownerAddres,
-    nameNFT: body.nameNFT,
-    description: body.description,
-    category: body.category,
-    collectionId: body.collectionId,
-    tokenId: body.tokenId,
-    transactionHash: [body.transactionHash],
+  const result = await contract.functions.collaboratotOf(tokenId);
+
+  const response = await storeNFTs.add({
+    ownerAddres: ownerAddres,
+    nameNFT: nameNFT,
+    description: description,
+    category: category,
+    collectionId: collectionId,
+    tokenId: tokenId,
+    transactionHash: [transactionHash],
     createdCollaborator: result[0],
     statusSale: false,
   });
+
+  const data = await storeUsers.doc(ownerAddres).get();
+  if (!data.exists) {
+    console.log("No such document!");
+  } else {
+    await storeUsers.doc(ownerAddres).set({
+      address: data.data().address,
+      name: data.data().name,
+      bio: data.data().bio,
+      twitter: data.data().twitter,
+      instagram: data.data().instagram,
+      contact: data.data().contact,
+      profileImage: data.data().profileImage,
+      backgroundImage: data.data().backgroundImage,
+      messageToSign: data.data().messageToSign,
+      favoriteNFT: data.data().favoriteNFT,
+      friendList: data.data().friendList,
+      NFTHistories: data.data().NFTHistories
+        ? [...data.data().NFTHistories, body.tokenId]
+        : [tokenId],
+    });
+  }
   return response;
 };
 
 const getAllNFT = async () => {
-  const NFTs = await storeNFT.get();
+  const NFTs = await storeNFTs.get();
   const data = [];
   const returnData = [];
   const provider = getProvider(11155111);
@@ -82,7 +116,7 @@ const getAllTransaction = async (id) => {
   //   chain: chain,
   // });
   // console.log(response.toJSON());
-  const NFTs = await storeNFT.doc(id).get();
+  const NFTs = await storeNFTs.doc(id).get();
 
   let temp = [];
   const provider = getProvider(11155111);
@@ -134,7 +168,7 @@ const getAllTransaction = async (id) => {
 };
 
 const getNFTByOwnerService = async (address) => {
-  const storeN = await storeNFT.get();
+  const storeN = await storeNFTs.get();
   let tempStore = [];
   let storeOfOwner = [];
   storeN.docs.map((doc) => tempStore.push(doc.data()));
@@ -147,7 +181,7 @@ const getNFTByOwnerService = async (address) => {
 };
 
 const getNFTByTokenId = async (tokenId) => {
-  const storeN = await storeNFT.get();
+  const storeN = await storeNFTs.get();
   let tempStore = [];
   let nftOfTokenId = [];
   const provider = getProvider(11155111);
@@ -174,16 +208,16 @@ const getNFTByTokenId = async (tokenId) => {
 };
 
 const deleteNFTByTokenId = async (tokenId) => {
-  await storeNFT.doc(tokenId).delete();
+  await storeNFTs.doc(tokenId).delete();
   return "delete NFT Success";
 };
 
 const listingForSale = async (id) => {
-  const data = await storeNFT.doc(id).get();
+  const data = await storeNFTs.doc(id).get();
   if (!data.exists) {
     console.log("No such document!");
   } else {
-    await storeNFT.doc(id).set({
+    await storeNFTs.doc(id).set({
       tokenId: data.data().tokenId,
       collectionId: data.data().collectionId,
       ownerAddres: data.data().ownerAddres,
@@ -199,11 +233,11 @@ const listingForSale = async (id) => {
 };
 
 const unlistingForSale = async (id) => {
-  const data = await storeNFT.doc(id).get();
+  const data = await storeNFTs.doc(id).get();
   if (!data.exists) {
     console.log("No such document!");
   } else {
-    await storeNFT.doc(id).set({
+    await storeNFTs.doc(id).set({
       tokenId: data.data().tokenId,
       collectionId: data.data().collectionId,
       ownerAddres: data.data().ownerAddres,
@@ -219,11 +253,11 @@ const unlistingForSale = async (id) => {
 };
 
 const updateCollectionOfNft = async (body) => {
-  const data = await storeNFT.doc(body.id).get();
+  const data = await storeNFTs.doc(body.id).get();
   if (!data.exists) {
     console.log("No such document!");
   } else {
-    await storeNFT.doc(body.id).set({
+    await storeNFTs.doc(body.id).set({
       tokenId: data.data().tokenId,
       collectionId: body.collectionId,
       ownerAddres: data.data().ownerAddres,
@@ -239,11 +273,11 @@ const updateCollectionOfNft = async (body) => {
 };
 
 const addTransactionHash = async (body) => {
-  const data = await storeNFT.doc(body.id).get();
+  const data = await storeNFTs.doc(body.id).get();
   if (!data.exists) {
     console.log("No such document!");
   } else {
-    await storeNFT.doc(body.id).set({
+    await storeNFTs.doc(body.id).set({
       tokenId: data.data().tokenId,
       collectionId: data.data().collectionId,
       ownerAddres: data.data().ownerAddres,
@@ -259,7 +293,7 @@ const addTransactionHash = async (body) => {
 };
 
 const updateOwnerNFT = async (body) => {
-  const data = await storeNFT.doc(body.id).get();
+  const data = await storeNFTs.doc(body.id).get();
   if (!data.exists) {
     console.log("No such document!");
   } else {
@@ -273,7 +307,7 @@ const updateOwnerNFT = async (body) => {
     const contract = new ethers.Contract(address, abi, signer);
     const result = await contract.functions.ownerOf(data.data().tokenId);
 
-    await storeNFT.doc(body.id).set({
+    await storeNFTs.doc(body.id).set({
       tokenId: data.data().tokenId,
       collectionId: data.data().collectionId,
       ownerAddres: result[0],
