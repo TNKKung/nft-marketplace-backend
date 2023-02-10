@@ -1,8 +1,10 @@
 const express = require("express");
+
 const nftRoute = require("./nft.route");
 const authRoute = require("./auth.route");
 const collectionRoute = require("./collection.route");
 const userRoute = require("./user.route");
+const searchRoute = require("./search.route");
 
 const router = express.Router();
 
@@ -22,6 +24,10 @@ const defaultRoutes = [
   {
     path: "/user",
     route: userRoute,
+  },
+  {
+    path: "/search",
+    route: searchRoute,
   },
 ];
 
