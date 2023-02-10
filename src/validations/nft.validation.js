@@ -2,7 +2,7 @@ const joi = require("joi");
 
 const createNFT = {
   body: joi.object().keys({
-    ownerAddres: joi.string().required(),
+    ownerAddress: joi.string().required(),
     nameNFT: joi.string().required(),
     description: joi.string().required(),
     category: joi.array().required(),

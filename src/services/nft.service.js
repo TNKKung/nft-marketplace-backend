@@ -32,7 +32,7 @@ const createNFTService = async (body) => {
 
   const {
     tokenId,
-    ownerAddres,
+    ownerAddress,
     nameNFT,
     description,
     category,
@@ -43,7 +43,7 @@ const createNFTService = async (body) => {
   const result = await contract.functions.collaboratotOf(tokenId);
 
   const response = await storeNFTs.add({
-    ownerAddres: ownerAddres,
+    ownerAddress: ownerAddress,
     nameNFT: nameNFT,
     description: description,
     category: category,
@@ -54,11 +54,11 @@ const createNFTService = async (body) => {
     statusSale: false,
   });
 
-  const data = await storeUsers.doc(ownerAddres).get();
+  const data = await storeUsers.doc(ownerAddress).get();
   if (!data.exists) {
     console.log("No such document!");
   } else {
-    await storeUsers.doc(ownerAddres).set({
+    await storeUsers.doc(ownerAddress).set({
       address: data.data().address,
       name: data.data().name,
       bio: data.data().bio,
@@ -173,7 +173,7 @@ const getNFTByOwnerService = async (address) => {
   let storeOfOwner = [];
   storeN.docs.map((doc) => tempStore.push(doc.data()));
   for (let i = 0; i < tempStore.length; i++) {
-    if (tempStore[i].ownerAddres === address) {
+    if (tempStore[i].ownerAddress === address) {
       storeOfOwner.push(tempStore[i]);
     }
   }
@@ -220,7 +220,7 @@ const listingForSale = async (id) => {
     await storeNFTs.doc(id).set({
       tokenId: data.data().tokenId,
       collectionId: data.data().collectionId,
-      ownerAddres: data.data().ownerAddres,
+      ownerAddress: data.data().ownerAddress,
       nameNFT: data.data().nameNFT,
       description: data.data().description,
       category: data.data().category,
@@ -240,7 +240,7 @@ const unlistingForSale = async (id) => {
     await storeNFTs.doc(id).set({
       tokenId: data.data().tokenId,
       collectionId: data.data().collectionId,
-      ownerAddres: data.data().ownerAddres,
+      ownerAddress: data.data().ownerAddress,
       nameNFT: data.data().nameNFT,
       description: data.data().description,
       category: data.data().category,
@@ -260,7 +260,7 @@ const updateCollectionOfNft = async (body) => {
     await storeNFTs.doc(body.id).set({
       tokenId: data.data().tokenId,
       collectionId: body.collectionId,
-      ownerAddres: data.data().ownerAddres,
+      ownerAddress: data.data().ownerAddress,
       nameNFT: data.data().nameNFT,
       description: data.data().description,
       category: data.data().category,
@@ -280,7 +280,7 @@ const addTransactionHash = async (body) => {
     await storeNFTs.doc(body.id).set({
       tokenId: data.data().tokenId,
       collectionId: data.data().collectionId,
-      ownerAddres: data.data().ownerAddres,
+      ownerAddress: data.data().ownerAddress,
       nameNFT: data.data().nameNFT,
       description: data.data().description,
       category: data.data().category,
@@ -310,7 +310,7 @@ const updateOwnerNFT = async (body) => {
     await storeNFTs.doc(body.id).set({
       tokenId: data.data().tokenId,
       collectionId: data.data().collectionId,
-      ownerAddres: result[0],
+      ownerAddress: result[0],
       nameNFT: data.data().nameNFT,
       description: data.data().description,
       category: data.data().category,
