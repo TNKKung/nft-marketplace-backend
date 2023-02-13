@@ -32,7 +32,7 @@ const getAllSearchList = async (keyword) => {
 
   storeCollections.docs.map((doc) => {
     if (doc.data().collectionName.includes(keyword)) {
-      searchList[0].lists.push(doc.data());
+      searchList[2].lists.push(doc.data());
     }
   });
 
