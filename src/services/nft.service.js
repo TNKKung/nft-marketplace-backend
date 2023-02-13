@@ -25,7 +25,7 @@ const createNFTService = async (body) => {
   const signer = new ethers.Wallet(config.privateKey, provider);
 
   const contract = new ethers.Contract(
-    "0x21371b76D530FaeAd7a36798c52600480329997F",
+    "0x985F253fB2F1b47acAAA6fcdc1D00178f7E7B207",
     abi,
     signer
   );
@@ -89,7 +89,7 @@ const getAllNFT = async () => {
   const abi = ["function tokenURI(uint256 tokenId) view returns (string)"];
 
   const contract = new ethers.Contract(
-    "0x21371b76D530FaeAd7a36798c52600480329997F",
+    "0x985F253fB2F1b47acAAA6fcdc1D00178f7E7B207",
     abi,
     signer
   );
@@ -191,7 +191,7 @@ const getNFTByTokenId = async (tokenId) => {
   const abi = ["function tokenURI(uint256 tokenId) view returns (string)"];
 
   const contract = new ethers.Contract(
-    "0x21371b76D530FaeAd7a36798c52600480329997F",
+    "0x985F253fB2F1b47acAAA6fcdc1D00178f7E7B207",
     abi,
     signer
   );
