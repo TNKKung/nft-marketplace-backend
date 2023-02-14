@@ -24,7 +24,7 @@ const getNFTByOwner = {
 
 const getNFTByTokenId = {
   query: joi.object().keys({
-    tokenId: joi.string().required(),
+    tokenId: joi.number().required(),
   }),
 };
 
