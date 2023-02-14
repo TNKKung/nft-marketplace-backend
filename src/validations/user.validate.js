@@ -53,9 +53,9 @@ const editInfoUser = {
   body: joi.object().keys({
     name: joi.string().required(),
     bio: joi.string().required(),
-    twitter: joi.string().required(),
-    instagram: joi.string().required(),
-    contact: joi.string().required(),
+    twitter: joi.string(),
+    instagram: joi.string(),
+    contact: joi.string(),
   }),
 };
 
