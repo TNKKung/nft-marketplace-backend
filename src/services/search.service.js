@@ -14,7 +14,7 @@ const getAllSearchList = async (keyword) => {
   storeNFTs.docs.map((doc) => {
     if (
       doc.data().tokenId.toString().includes(keyword) ||
-      doc.data().ownerAddress.startsWith(keyword) ||
+      doc.data().ownerAddress === keyword ||
       doc.data().nameNFT.includes(keyword)
     ) {
       searchList[1].lists.push(doc.data());
@@ -22,10 +22,7 @@ const getAllSearchList = async (keyword) => {
   });
 
   storeUsers.docs.map((doc) => {
-    if (
-      doc.data().address.startsWith(keyword) ||
-      doc.data().name.includes(keyword)
-    ) {
+    if (doc.data().address === keyword || doc.data().name.includes(keyword)) {
       searchList[0].lists.push(doc.data());
     }
   });
