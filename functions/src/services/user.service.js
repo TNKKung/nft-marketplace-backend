@@ -1,8 +1,8 @@
-const { store } = require("../config/firebase");
 // const { ethers } = require("ethers");
 const dotenv = require("dotenv");
 const path = require("path");
 
+const { store } = require("../config/firebase");
 // const { getProvider } = require("../utils/provider");
 // const config = require("../config/config");
 
