@@ -184,7 +184,7 @@ const getNFTByTokenId = async (tokenId) => {
   const storeN = await storeNFTs.get();
   let tempStore = [];
   let nftOfTokenId = [];
-  const provider = getProvider(11155111);
+  const provider = getProvider();
 
   const signer = new ethers.Wallet(config.privateKey, provider);
 
@@ -197,9 +197,9 @@ const getNFTByTokenId = async (tokenId) => {
   );
 
   storeN.docs.map((doc) => tempStore.push({ id: doc.id, ...doc.data() }));
-  
+
   for (let i = 0; i < tempStore.length; i++) {
-    if (tempStore[i].tokenId.toString() === tokenId) {
+    if (tempStore[i].tokenId === tokenId) {
       const result = await contract.functions.tokenURI(tempStore[i].tokenId);
       nftOfTokenId.push({ ...tempStore[i], tokenURI: result[0] });
     }
