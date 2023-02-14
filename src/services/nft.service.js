@@ -197,10 +197,10 @@ const getNFTByTokenId = async (tokenId) => {
   );
 
   storeN.docs.map((doc) => tempStore.push({ id: doc.id, ...doc.data() }));
-  const result = await contract.functions.tokenURI(tempStore[0].tokenId);
-
+  
   for (let i = 0; i < tempStore.length; i++) {
     if (tempStore[i].tokenId.toString() === tokenId) {
+      const result = await contract.functions.tokenURI(tempStore[i].tokenId);
       nftOfTokenId.push({ ...tempStore[i], tokenURI: result[0] });
     }
   }
