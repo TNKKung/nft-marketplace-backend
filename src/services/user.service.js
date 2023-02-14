@@ -128,8 +128,7 @@ const removeFavoriteNFT = async (address, tokenId) => {
   } else {
     let tempStore = [];
     for (let i = 0; i < data.data().favoriteNFT.length; i++) {
-      console.log(data.data().favoriteNFT[i] === tokenId);
-      if (data.data().favoriteNFT[i] !== tokenId) {
+      if (data.data().favoriteNFT[i].tokenId !== tokenId) {
         tempStore.push(data.data().favoriteNFT[i]);
       }
     }
@@ -146,6 +145,7 @@ const removeFavoriteNFT = async (address, tokenId) => {
       favoriteNFT: tempStore,
       friendList: data.data().friendList,
     });
+    return tempStore;
   }
 };
 
