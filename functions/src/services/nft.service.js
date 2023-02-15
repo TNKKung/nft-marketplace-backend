@@ -3,8 +3,6 @@ const { ethers } = require("ethers");
 const dotenv = require("dotenv");
 const path = require("path");
 const Web3 = require("web3");
-// const Moralis = require("moralis").default;
-// const { EvmChain } = require("@moralisweb3/common-evm-utils");
 
 const { getProvider } = require("../utils/provider");
 const config = require("../config/config");
@@ -16,7 +14,7 @@ const storeUsers = store.collection("Users");
 dotenv.config({ path: path.join(__dirname, "../../.env") });
 
 const createNFTService = async (body) => {
-  const provider = getProvider(11155111);
+  const provider = getProvider();
 
   const abi = [
     "function collaboratotOf(uint256 tokenId) view returns (address[])",
@@ -71,7 +69,7 @@ const createNFTService = async (body) => {
       favoriteNFT: data.data().favoriteNFT,
       friendList: data.data().friendList,
       NFTHistories: data.data().NFTHistories
-        ? [...data.data().NFTHistories, body.tokenId]
+        ? [...data.data().NFTHistories, tokenId]
         : [tokenId],
     });
   }
@@ -82,7 +80,7 @@ const getAllNFT = async () => {
   const NFTs = await storeNFTs.get();
   const data = [];
   const returnData = [];
-  const provider = getProvider(11155111);
+  const provider = getProvider();
 
   const signer = new ethers.Wallet(config.privateKey, provider);
 
@@ -105,21 +103,10 @@ const getAllNFT = async () => {
 };
 
 const getAllTransaction = async (id) => {
-  // await Moralis.start({
-  //   apiKey: config.moralisApiKey,
-  //   // ...and any other configuration
-  // });
-  // const address = "0xDCfC2c24585328b905d06Fa15739163f01828FEb";
-  // const chain = EvmChain.SEPOLIA;
-  // const response = await Moralis.EvmApi.events.getContractLogs({
-  //   address: address,
-  //   chain: chain,
-  // });
-  // console.log(response.toJSON());
   const NFTs = await storeNFTs.doc(id).get();
 
   let temp = [];
-  const provider = getProvider(11155111);
+  const provider = getProvider();
   const web3 = new Web3(
     new Web3.providers.HttpProvider("https://rpc2.sepolia.org/ ")
   );
@@ -143,15 +130,11 @@ const getAllTransaction = async (id) => {
       }
       const eventSignature = web3.eth.abi.encodeEventSignature(event);
       if (topic === eventSignature) {
-        // Decode the log data using the event definition
         const eventData = web3.eth.abi.decodeLog(
           event.inputs,
           transactionReceipts.logs[0].data,
           transactionReceipts.logs[0].topics.slice(1)
         );
-        // Use the decoded data as needed
-        // console.log(`Matched event: ${event.name}`);
-        // console.log("Event data:", eventData);
 
         temp.push({
           event: event.name,
@@ -162,7 +145,6 @@ const getAllTransaction = async (id) => {
       }
     }
   }
-  console.log(temp);
 
   return temp;
 };
@@ -181,10 +163,9 @@ const getNFTByOwnerService = async (address) => {
 };
 
 const getNFTByTokenId = async (tokenId) => {
-  const storeN = await storeNFTs.get();
-  let tempStore = [];
-  let nftOfTokenId = [];
+  const storeNFT = await storeNFTs.get();
   const provider = getProvider();
+  let nftOfTokenId = [];
 
   const signer = new ethers.Wallet(config.privateKey, provider);
 
@@ -196,12 +177,16 @@ const getNFTByTokenId = async (tokenId) => {
     signer
   );
 
-  storeN.docs.map((doc) => tempStore.push({ id: doc.id, ...doc.data() }));
+  const storeNFTDatas = storeNFT.docs.map((doc) => {
+    return { id: doc.id, ...doc.data() };
+  });
 
-  for (let i = 0; i < tempStore.length; i++) {
-    if (tempStore[i].tokenId === tokenId) {
-      const result = await contract.functions.tokenURI(tempStore[i].tokenId);
-      nftOfTokenId.push({ ...tempStore[i], tokenURI: result[0] });
+  for (let i = 0; i < storeNFTDatas.length; i++) {
+    if (storeNFTDatas[i].tokenId === tokenId) {
+      const result = await contract.functions.tokenURI(
+        storeNFTDatas[i].tokenId
+      );
+      nftOfTokenId.push({ ...storeNFTDatas[i], tokenURI: result[0] });
     }
   }
   return nftOfTokenId;
@@ -297,7 +282,7 @@ const updateOwnerNFT = async (body) => {
   if (!data.exists) {
     console.log("No such document!");
   } else {
-    const provider = getProvider(11155111);
+    const provider = getProvider();
 
     const signer = new ethers.Wallet(config.privateKey, provider);
 
