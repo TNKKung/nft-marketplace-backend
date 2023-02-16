@@ -88,7 +88,6 @@ const createNFTService = async (body) => {
 
 const getAllNFT = async () => {
   const NFTs = await storeNFTs.get();
-  const data = [];
   const returnData = [];
   const provider = getProvider();
 
@@ -101,8 +100,8 @@ const getAllNFT = async () => {
     abi,
     signer
   );
-  NFTs.docs.map((doc) => {
-    data.push({ ...doc.data() });
+  const data = NFTs.docs.map((doc) => {
+    return { ...doc.data() };
   });
 
   for (let i = 0; i < data.length; i++) {
@@ -160,15 +159,11 @@ const getAllTransaction = async (id) => {
 };
 
 const getNFTByOwnerService = async (address) => {
-  const storeN = await storeNFTs.get();
-  let tempStore = [];
-  let storeOfOwner = [];
-  storeN.docs.map((doc) => tempStore.push(doc.data()));
-  for (let i = 0; i < tempStore.length; i++) {
-    if (tempStore[i].ownerAddress === address) {
-      storeOfOwner.push(tempStore[i]);
-    }
-  }
+  const NFTs = await storeNFTs.get();
+  const dataNFTs = NFTs.docs.map((doc) => doc.data());
+  const storeOfOwner = dataNFTs.filter(
+    (dataNFT) => dataNFT.ownerAddress === address
+  );
   return storeOfOwner;
 };
 
@@ -258,13 +253,17 @@ const unlistingForSale = async (id, ownerAddress) => {
 };
 
 const updateCollectionOfNft = async (body) => {
-  const data = await storeNFTs.doc(body.id).get();
+  const { id, collectionId, ownerAddress } = body;
+  const data = await storeNFTs.doc(id).get();
   if (!data.exists) {
     console.log("No such document!");
   } else {
-    await storeNFTs.doc(body.id).set({
+    if (data.data().ownerAddress !== ownerAddress) {
+      return "Not the owner of the NFT";
+    }
+    await storeNFTs.doc(id).set({
       tokenId: data.data().tokenId,
-      collectionId: body.collectionId,
+      collectionId: collectionId,
       ownerAddress: data.data().ownerAddress,
       nameNFT: data.data().nameNFT,
       description: data.data().description,
