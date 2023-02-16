@@ -29,12 +29,18 @@ const getNFTByTokenId = {
 };
 
 const listingForSale = {
+  query: joi.object().keys({
+    ownerAddress: joi.string().required(),
+  }),
   body: joi.object().keys({
     id: joi.string().required(),
   }),
 };
 
 const unlistingForSale = {
+  query: joi.object().keys({
+    ownerAddress: joi.string().required(),
+  }),
   body: joi.object().keys({
     id: joi.string().required(),
   }),

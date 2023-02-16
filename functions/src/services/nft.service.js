@@ -38,6 +38,16 @@ const createNFTService = async (body) => {
     transactionHash,
   } = body;
 
+  const NFTs = await storeNFTs.get();
+
+  const checkTokenInStore = NFTs.docs.filter(
+    (doc) => doc.data().tokenId === tokenId
+  );
+
+  if (checkTokenInStore.length !== 0) {
+    return "already token in store";
+  }
+
   const result = await contract.functions.collaboratotOf(tokenId);
 
   const response = await storeNFTs.add({
@@ -197,11 +207,16 @@ const deleteNFTByTokenId = async (tokenId) => {
   return "delete NFT Success";
 };
 
-const listingForSale = async (id) => {
+const listingForSale = async (id, ownerAddress) => {
   const data = await storeNFTs.doc(id).get();
   if (!data.exists) {
     console.log("No such document!");
   } else {
+    if (ownerAddress !== data.data().ownerAddress) {
+      return "Not the owner of the NFT";
+    } else if (data.data().statusSale === true) {
+      return "NFT already for sale";
+    }
     await storeNFTs.doc(id).set({
       tokenId: data.data().tokenId,
       collectionId: data.data().collectionId,
@@ -217,11 +232,16 @@ const listingForSale = async (id) => {
   return "listing for sale";
 };
 
-const unlistingForSale = async (id) => {
+const unlistingForSale = async (id, ownerAddress) => {
   const data = await storeNFTs.doc(id).get();
   if (!data.exists) {
     console.log("No such document!");
   } else {
+    if (ownerAddress !== data.data().ownerAddress) {
+      return "Not the owner of the NFT";
+    } else if (data.data().statusSale === false) {
+      return "NFT is currently not listed on the marketplace";
+    }
     await storeNFTs.doc(id).set({
       tokenId: data.data().tokenId,
       collectionId: data.data().collectionId,

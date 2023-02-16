@@ -32,12 +32,16 @@ const deleteNFTByTokenIdController = catchAsync(async (req, res) => {
 });
 
 const listingForSaleController = catchAsync(async (req, res) => {
-  const response = await nftService.listingForSale(req.body.id);
+  const { id } = req.body;
+  const { ownerAddress } = req.query;
+  const response = await nftService.listingForSale(id, ownerAddress);
   res.send({ response });
 });
 
 const unlistingForSaleController = catchAsync(async (req, res) => {
-  const response = await nftService.unlistingForSale(req.body.id);
+  const { id } = req.body;
+  const { ownerAddress } = req.query;
+  const response = await nftService.unlistingForSale(id, ownerAddress);
   res.send({ response });
 });
 
