@@ -15,10 +15,18 @@ router.get(
 );
 
 router.get(
+  "/getNFTCreatedByOwner",
+  validate(nftValidation.getNFTCreatedByOwner),
+  nftController.getNFTCreatedByOwnerController
+);
+
+router.get(
   "/getNFTByTokenId",
   validate(nftValidation.getNFTByTokenId),
   nftController.getNFTByTokenIdController
 );
+
+router.get("/getAllTransaction", nftController.getAllTransaction);
 
 router.post(
   "/",
@@ -67,7 +75,5 @@ router.patch(
   validate(nftValidation.unlistingForSale),
   nftController.unlistingForSaleController
 );
-
-router.get("/getAllTransaction", nftController.getAllTransaction);
 
 module.exports = router;

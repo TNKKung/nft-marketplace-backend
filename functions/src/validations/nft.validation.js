@@ -22,6 +22,12 @@ const getNFTByOwner = {
   }),
 };
 
+const getNFTCreatedByOwner = {
+  query: joi.object().keys({
+    address: joi.string().required(),
+  }),
+};
+
 const getNFTByTokenId = {
   query: joi.object().keys({
     tokenId: joi.number().required(),
@@ -76,4 +82,5 @@ module.exports = {
   unlistingForSale,
   updateCollectionOfNft,
   updateOwnerNFT,
+  getNFTCreatedByOwner,
 };

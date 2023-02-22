@@ -19,6 +19,12 @@ const getNFTByOwnerController = catchAsync(async (req, res) => {
   res.send({ response });
 });
 
+const getNFTCreatedByOwnerController = catchAsync(async (req, res) => {
+  const { address } = req.query;
+  const response = await nftService.getNFTCreatedByOwnerService(address);
+  res.send({ response });
+});
+
 const getNFTByTokenIdController = catchAsync(async (req, res) => {
   const { tokenId } = req.query;
   const response = await nftService.getNFTByTokenId(tokenId);
@@ -78,4 +84,5 @@ module.exports = {
   unlistingForSaleController,
   getAllTransaction,
   addTransactionHashController,
+  getNFTCreatedByOwnerController,
 };

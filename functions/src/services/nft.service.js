@@ -60,6 +60,7 @@ const createNFTService = async (body) => {
     transactionHash: [transactionHash],
     createdCollaborator: result[0],
     statusSale: false,
+    createdOwner: ownerAddress,
   });
 
   const data = await storeUsers.doc(ownerAddress).get();
@@ -167,6 +168,15 @@ const getNFTByOwnerService = async (address) => {
   return storeOfOwner;
 };
 
+const getNFTCreatedByOwnerService = async (address) => {
+  const NFTs = await storeNFTs.get();
+  const dataNFTs = NFTs.docs.map((doc) => doc.data());
+  const storeOfOwner = dataNFTs.filter(
+    (dataNFT) => dataNFT.createdOwner === address
+  );
+  return storeOfOwner;
+};
+
 const getNFTByTokenId = async (tokenId) => {
   const storeNFT = await storeNFTs.get();
   const provider = getProvider();
@@ -222,6 +232,7 @@ const listingForSale = async (id, ownerAddress) => {
       createdCollaborator: data.data().createdCollaborator,
       transactionHash: data.data().transactionHash,
       statusSale: true,
+      createdOwner: data.data().createdOwner,
     });
   }
   return "listing for sale";
@@ -247,6 +258,7 @@ const unlistingForSale = async (id, ownerAddress) => {
       createdCollaborator: data.data().createdCollaborator,
       transactionHash: data.data().transactionHash,
       statusSale: false,
+      createdOwner: data.data().createdOwner,
     });
   }
   return "unlisting for sale";
@@ -271,6 +283,7 @@ const updateCollectionOfNft = async (body) => {
       createdCollaborator: data.data().createdCollaborator,
       transactionHash: data.data().transactionHash,
       statusSale: data.data().statusSale,
+      createdOwner: data.data().createdOwner,
     });
   }
   return "update new collectionId";
@@ -291,6 +304,7 @@ const addTransactionHash = async (body) => {
       createdCollaborator: data.data().createdCollaborator,
       transactionHash: [...data.data().transactionHash, body.transactionHash],
       statusSale: data.data().statusSale,
+      createdOwner: data.data().createdOwner,
     });
   }
   return "add transaction hash complete";
@@ -321,6 +335,7 @@ const updateOwnerNFT = async (body) => {
       createdCollaborator: data.data().createdCollaborator,
       transactionHash: data.data().transactionHash,
       statusSale: data.data().statusSale,
+      createdOwner: data.data().createdOwner,
     });
   }
   return "update new owner";
@@ -338,4 +353,5 @@ module.exports = {
   unlistingForSale,
   addTransactionHash,
   getAllTransaction,
+  getNFTCreatedByOwnerService,
 };
