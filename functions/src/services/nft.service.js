@@ -108,7 +108,7 @@ const getAllNFT = async () => {
   ];
 
   const contractMarketplace = new ethers.Contract(
-    "0xe4876D177a6aDf402fAD2af19a9EB057F462Ef28",
+    "0x5c63fde25273396c43520c11E8A7a7353A345d0F",
     abiMarketplace,
     signer
   );
