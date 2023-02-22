@@ -5,7 +5,11 @@ const path = require("path");
 const Web3 = require("web3");
 
 const { getProvider } = require("../utils/provider");
-const config = require("../config/config");
+const {
+  privateKey,
+  nftContract,
+  marketplaceContract,
+} = require("../config/config");
 const abi = require("../config/abi.json");
 
 const storeNFTs = store.collection("NFTs");
@@ -20,13 +24,9 @@ const createNFTService = async (body) => {
     "function collaboratotOf(uint256 tokenId) view returns (address[])",
   ];
 
-  const signer = new ethers.Wallet(config.privateKey, provider);
+  const signer = new ethers.Wallet(privateKey, provider);
 
-  const contract = new ethers.Contract(
-    "0x985F253fB2F1b47acAAA6fcdc1D00178f7E7B207",
-    abi,
-    signer
-  );
+  const contract = new ethers.Contract(nftContract, abi, signer);
 
   const {
     tokenId,
@@ -93,22 +93,18 @@ const getAllNFT = async () => {
   const provider = getProvider();
   const web3 = new Web3();
 
-  const signer = new ethers.Wallet(config.privateKey, provider);
+  const signer = new ethers.Wallet(privateKey, provider);
 
   const abiNFT = ["function tokenURI(uint256 tokenId) view returns (string)"];
 
-  const contractNFT = new ethers.Contract(
-    "0x985F253fB2F1b47acAAA6fcdc1D00178f7E7B207",
-    abiNFT,
-    signer
-  );
+  const contractNFT = new ethers.Contract(nftContract, abiNFT, signer);
 
   const abiMarketplace = [
     "function priceFromTokenId(uint256 tokenId) view returns (uint256)",
   ];
 
   const contractMarketplace = new ethers.Contract(
-    "0x5c63fde25273396c43520c11E8A7a7353A345d0F",
+    marketplaceContract,
     abiMarketplace,
     signer
   );
@@ -202,15 +198,11 @@ const getNFTByTokenId = async (tokenId) => {
   const provider = getProvider();
   let nftOfTokenId = [];
 
-  const signer = new ethers.Wallet(config.privateKey, provider);
+  const signer = new ethers.Wallet(privateKey, provider);
 
   const abi = ["function tokenURI(uint256 tokenId) view returns (string)"];
 
-  const contract = new ethers.Contract(
-    "0x985F253fB2F1b47acAAA6fcdc1D00178f7E7B207",
-    abi,
-    signer
-  );
+  const contract = new ethers.Contract(nftContract, abi, signer);
 
   const storeNFTDatas = storeNFT.docs.map((doc) => {
     return { id: doc.id, ...doc.data() };
@@ -337,7 +329,7 @@ const updateOwnerNFT = async (body) => {
   } else {
     const provider = getProvider();
 
-    const signer = new ethers.Wallet(config.privateKey, provider);
+    const signer = new ethers.Wallet(privateKey, provider);
 
     const address = body.contract;
     const abi = ["function ownerOf(uint256 tokenId) view returns (address)"];
