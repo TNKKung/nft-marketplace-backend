@@ -48,7 +48,7 @@ const createNFTService = async (body) => {
     return "already token in store";
   }
 
-  const result = await contract.functions.collaboratotOf(tokenId);
+  const result = await contract.populateTransaction.collaboratotOf(tokenId);
 
   const response = await storeNFTs.add({
     ownerAddress: ownerAddress,
@@ -113,11 +113,16 @@ const getAllNFT = async () => {
   });
 
   for (let i = 0; i < data.length; i++) {
-    const result = await contractNFT.functions.tokenURI(data[i].tokenId);
-    const resultPrice = await contractMarketplace.functions.priceFromTokenId(
+    const result = await contractNFT.populateTransaction.tokenURI(
       data[i].tokenId
     );
-    const wei = web3.utils.toBN(resultPrice[0]["_hex"]).toString();
+
+    const resultPrice =
+      await contractMarketplace.populateTransaction.priceFromTokenId(
+        data[i].tokenId
+      );
+
+    const wei = web3.utils.toBN(resultPrice.data).toString();
     const eth = ethers.utils.formatEther(wei);
     returnData.push({
       ...data[i],
@@ -210,7 +215,7 @@ const getNFTByTokenId = async (tokenId) => {
 
   for (let i = 0; i < storeNFTDatas.length; i++) {
     if (storeNFTDatas[i].tokenId === tokenId) {
-      const result = await contract.functions.tokenURI(
+      const result = await contract.populateTransaction.tokenURI(
         storeNFTDatas[i].tokenId
       );
       nftOfTokenId.push({ ...storeNFTDatas[i], tokenURI: result[0] });
@@ -335,7 +340,9 @@ const updateOwnerNFT = async (body) => {
     const abi = ["function ownerOf(uint256 tokenId) view returns (address)"];
 
     const contract = new ethers.Contract(address, abi, signer);
-    const result = await contract.functions.ownerOf(data.data().tokenId);
+    const result = await contract.populateTransaction.ownerOf(
+      data.data().tokenId
+    );
 
     await storeNFTs.doc(body.id).set({
       tokenId: data.data().tokenId,
