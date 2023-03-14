@@ -87,9 +87,8 @@ const createNFTService = async (body) => {
   return response;
 };
 
-const getAllNFT = async () => {
+const getAllNFTService = async () => {
   const NFTs = await storeNFTs.get();
-  const returnData = [];
   const provider = getProvider();
   const web3 = new Web3();
 
@@ -108,71 +107,124 @@ const getAllNFT = async () => {
     abiMarketplace,
     signer
   );
-  const data = NFTs.docs.map((doc) => {
-    return { ...doc.data() };
-  });
 
-  for (let i = 0; i < data.length; i++) {
-    const result = await contractNFT.functions.tokenURI(data[i].tokenId);
-    const resultPrice = await contractMarketplace.functions.priceFromTokenId(
-      data[i].tokenId
-    );
-    const wei = web3.utils.toBN(resultPrice[0]["_hex"]).toString();
-    const eth = ethers.utils.formatEther(wei);
-    returnData.push({
-      ...data[i],
-      tokenURI: result[0],
-      price: data[i].statusSale ? eth : "",
-    });
-  }
-  return returnData;
+  return Promise.all(
+    NFTs.docs.map(async (doc) => {
+      const result = await contractNFT.functions.tokenURI(doc.data().tokenId);
+      const resultPrice = await contractMarketplace.functions.priceFromTokenId(
+        doc.data().tokenId
+      );
+      const wei = web3.utils.toBN(resultPrice[0]["_hex"]).toString();
+      const eth = ethers.utils.formatEther(wei);
+      return {
+        ...doc.data(),
+        tokenURI: result[0],
+        price: doc.data().statusSale ? eth : "",
+      };
+    })
+  );
+
+  // let returnData = []
+
+  // for (let i = 0; i < data.length; i++) {
+  //   const result = await contractNFT.functions.tokenURI(data[i].tokenId);
+  //   const resultPrice = await contractMarketplace.functions.priceFromTokenId(
+  //     data[i].tokenId
+  //   );
+  //   const wei = web3.utils.toBN(resultPrice[0]["_hex"]).toString();
+  //   const eth = ethers.utils.formatEther(wei);
+  //   returnData.push({
+  //     ...data[i],
+  //     tokenURI: result[0],
+  //     price: data[i].statusSale ? eth : "",
+  //   });
+  // }
+  // return returnData;
 };
 
-const getAllTransaction = async (id) => {
+const getAllTransactionService = async (id) => {
   const NFTs = await storeNFTs.doc(id).get();
 
   let temp = [];
   const provider = getProvider();
   const web3 = new Web3(
-    new Web3.providers.HttpProvider("https://rpc2.sepolia.org/ ")
+    new Web3.providers.HttpProvider("https://rpc2.sepolia.org/")
   );
 
-  for (let i = 0; i < NFTs.data().transactionHash.length; i += 1) {
-    const hexHash = NFTs.data().transactionHash[i];
-    const transactionReceipts = await provider.getTransactionReceipt(hexHash);
-    const topic = transactionReceipts.logs[0].topics[0];
+  return Promise.all(
+    NFTs.data().transactionHash.map(async (hash) => {
+      console.log(hash);
+      const transactionReceipts = await provider.getTransactionReceipt(hash);
+      const topic = transactionReceipts.logs[0].topics[0];
 
-    const tx = await web3.eth.getTransaction(hexHash);
-    const block = await web3.eth.getBlock(tx.blockNumber);
-    console.log("timestamp :", block.timestamp);
+      const tx = await web3.eth.getTransaction(hash);
+      const block = await web3.eth.getBlock(tx.blockNumber);
+      console.log("timestamp :", block.timestamp);
 
-    const date = new Date(block.timestamp * 1000);
-    const formatDate = date.toLocaleDateString();
-    const formatTime = date.toLocaleTimeString();
+      const date = new Date(block.timestamp * 1000);
+      const formatDate = date.toLocaleDateString();
+      const formatTime = date.toLocaleTimeString();
 
-    for (const event of abi) {
-      if (event.type !== "event") {
-        continue;
+      for (const event of abi) {
+        if (event.type !== "event") {
+          continue;
+        }
+        const eventSignature = web3.eth.abi.encodeEventSignature(event);
+        if (topic === eventSignature) {
+          const eventData = web3.eth.abi.decodeLog(
+            event.inputs,
+            transactionReceipts.logs[0].data,
+            transactionReceipts.logs[0].topics.slice(1)
+          );
+
+          return {
+            event: event.name,
+            eventData: eventData,
+            date: formatDate,
+            time: formatTime,
+          };
+        }
       }
-      const eventSignature = web3.eth.abi.encodeEventSignature(event);
-      if (topic === eventSignature) {
-        const eventData = web3.eth.abi.decodeLog(
-          event.inputs,
-          transactionReceipts.logs[0].data,
-          transactionReceipts.logs[0].topics.slice(1)
-        );
+    })
+  );
 
-        temp.push({
-          event: event.name,
-          eventData: eventData,
-          date: formatDate,
-          time: formatTime,
-        });
-      }
-    }
-  }
+  // for (let i = 0; i < NFTs.data().transactionHash.length; i += 1) {
+  //   const hexHash = NFTs.data().transactionHash[i];
+  //   console.log(hexHash);
+  //   const transactionReceipts = await provider.getTransactionReceipt(hexHash);
+  //   const topic = transactionReceipts.logs[0].topics[0];
 
-  return temp;
+  //   const tx = await web3.eth.getTransaction(hexHash);
+  //   const block = await web3.eth.getBlock(tx.blockNumber);
+  //   console.log("timestamp :", block.timestamp);
+
+  //   const date = new Date(block.timestamp * 1000);
+  //   const formatDate = date.toLocaleDateString();
+  //   const formatTime = date.toLocaleTimeString();
+
+  //   for (const event of abi) {
+  //     if (event.type !== "event") {
+  //       continue;
+  //     }
+  //     const eventSignature = web3.eth.abi.encodeEventSignature(event);
+  //     if (topic === eventSignature) {
+  //       const eventData = web3.eth.abi.decodeLog(
+  //         event.inputs,
+  //         transactionReceipts.logs[0].data,
+  //         transactionReceipts.logs[0].topics.slice(1)
+  //       );
+
+  //       temp.push({
+  //         event: event.name,
+  //         eventData: eventData,
+  //         date: formatDate,
+  //         time: formatTime,
+  //       });
+  //     }
+  //   }
+  // }
+
+  // return temp;
 };
 
 const getNFTByOwnerService = async (address) => {
@@ -186,14 +238,20 @@ const getNFTByOwnerService = async (address) => {
 
 const getNFTCreatedByOwnerService = async (address) => {
   const NFTs = await storeNFTs.get();
-  const dataNFTs = NFTs.docs.map((doc) => doc.data());
-  const storeOfOwner = dataNFTs.filter(
-    (dataNFT) => dataNFT.createdOwner === address
+
+  const filterData = NFTs.docs.filter(
+    (doc) => doc.data().createdOwner === address
   );
-  return storeOfOwner;
+
+  return Promise.all(
+    filterData.map(async (doc) => {
+      const result = await contract.functions.tokenURI(doc.data().tokenId);
+      return { id: doc.id, ...doc.data(), tokenURI: result[0] };
+    })
+  );
 };
 
-const getNFTByTokenId = async (tokenId) => {
+const getNFTByTokenIdService = async (tokenId) => {
   const storeNFT = await storeNFTs.get();
   const provider = getProvider();
   let nftOfTokenId = [];
@@ -204,22 +262,33 @@ const getNFTByTokenId = async (tokenId) => {
 
   const contract = new ethers.Contract(nftContract, abi, signer);
 
-  const storeNFTDatas = storeNFT.docs.map((doc) => {
-    return { id: doc.id, ...doc.data() };
-  });
+  // const storeNFTDatas = storeNFT.docs.map((doc) => {
+  //   return { id: doc.id, ...doc.data() };
+  // });
 
-  for (let i = 0; i < storeNFTDatas.length; i++) {
-    if (storeNFTDatas[i].tokenId === tokenId) {
-      const result = await contract.functions.tokenURI(
-        storeNFTDatas[i].tokenId
-      );
-      nftOfTokenId.push({ ...storeNFTDatas[i], tokenURI: result[0] });
-    }
-  }
-  return nftOfTokenId;
+  // for (let i = 0; i < storeNFTDatas.length; i++) {
+  //   if (storeNFTDatas[i].tokenId === tokenId) {
+  //     const result = await contract.functions.tokenURI(
+  //       storeNFTDatas[i].tokenId
+  //     );
+  //     nftOfTokenId.push({ ...storeNFTDatas[i], tokenURI: result[0] });
+  //   }
+  // }
+  // return nftOfTokenId;
+
+  const filterData = storeNFT.docs.filter(
+    (doc) => doc.data().tokenId === tokenId
+  );
+
+  return Promise.all(
+    filterData.map(async (doc) => {
+      const result = await contract.functions.tokenURI(doc.data().tokenId);
+      return { id: doc.id, ...doc.data(), tokenURI: result[0] };
+    })
+  );
 };
 
-const deleteNFTByTokenId = async (tokenId) => {
+const deleteNFTByTokenIdService = async (tokenId) => {
   await storeNFTs.doc(tokenId).delete();
   return "delete NFT Success";
 };
@@ -250,7 +319,7 @@ const listingForSale = async (id, ownerAddress) => {
   return "listing for sale";
 };
 
-const unlistingForSale = async (id, ownerAddress) => {
+const unlistingForSaleService = async (id, ownerAddress) => {
   const data = await storeNFTs.doc(id).get();
   if (!data.exists) {
     console.log("No such document!");
@@ -276,7 +345,7 @@ const unlistingForSale = async (id, ownerAddress) => {
   return "unlisting for sale";
 };
 
-const updateCollectionOfNft = async (body) => {
+const updateCollectionOfNftService = async (body) => {
   const { id, collectionId, ownerAddress } = body;
   const data = await storeNFTs.doc(id).get();
   if (!data.exists) {
@@ -301,7 +370,7 @@ const updateCollectionOfNft = async (body) => {
   return "update new collectionId";
 };
 
-const addTransactionHash = async (body) => {
+const addTransactionHashService = async (body) => {
   const data = await storeNFTs.doc(body.id).get();
   if (!data.exists) {
     console.log("No such document!");
@@ -322,7 +391,7 @@ const addTransactionHash = async (body) => {
   return "add transaction hash complete";
 };
 
-const updateOwnerNFT = async (body) => {
+const updateOwnerNFTService = async (body) => {
   const data = await storeNFTs.doc(body.id).get();
   if (!data.exists) {
     console.log("No such document!");
@@ -355,15 +424,15 @@ const updateOwnerNFT = async (body) => {
 
 module.exports = {
   createNFTService,
-  getAllNFT,
+  getAllNFTService,
   getNFTByOwnerService,
-  getNFTByTokenId,
-  deleteNFTByTokenId,
-  updateCollectionOfNft,
-  updateOwnerNFT,
+  getNFTByTokenIdService,
+  deleteNFTByTokenIdService,
+  updateCollectionOfNftService,
+  updateOwnerNFTService,
   listingForSale,
-  unlistingForSale,
-  addTransactionHash,
-  getAllTransaction,
+  unlistingForSaleService,
+  addTransactionHashService,
+  getAllTransactionService,
   getNFTCreatedByOwnerService,
 };
