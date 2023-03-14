@@ -1,25 +1,16 @@
 const joi = require("joi");
 
-const getAllUsers = {
+const getAllUsersValidate = {
   body: joi.object().keys({}),
 };
 
-const getUserByAddress = {
+const getUserByAddressValidate = {
   query: joi.object().keys({
     address: joi.string().required(),
   }),
 };
 
-const addFriendList = {
-  query: joi.object().keys({
-    address: joi.string().required(),
-  }),
-  body: joi.object().keys({
-    friendAddress: joi.string().required(),
-  }),
-};
-
-const unfriendList = {
+const addFriendListValidate = {
   query: joi.object().keys({
     address: joi.string().required(),
   }),
@@ -28,7 +19,16 @@ const unfriendList = {
   }),
 };
 
-const addFavoriteNFT = {
+const unfriendListValidate = {
+  query: joi.object().keys({
+    address: joi.string().required(),
+  }),
+  body: joi.object().keys({
+    friendAddress: joi.string().required(),
+  }),
+};
+
+const addFavoriteNFTValidate = {
   query: joi.object().keys({
     address: joi.string().required(),
   }),
@@ -37,7 +37,7 @@ const addFavoriteNFT = {
   }),
 };
 
-const removeFavoriteNFT = {
+const removeFavoriteNFTValidate = {
   query: joi.object().keys({
     address: joi.string().required(),
   }),
@@ -46,7 +46,7 @@ const removeFavoriteNFT = {
   }),
 };
 
-const editInfoUser = {
+const editInfoUserValidate = {
   query: joi.object().keys({
     address: joi.string().required(),
   }),
@@ -59,7 +59,7 @@ const editInfoUser = {
   }),
 };
 
-const editImageProfile = {
+const editImageProfileValidate = {
   query: joi.object().keys({
     address: joi.string().required(),
   }),
@@ -68,7 +68,7 @@ const editImageProfile = {
   }),
 };
 
-const editImageBackground = {
+const editImageBackgroundValidate = {
   query: joi.object().keys({
     address: joi.string().required(),
   }),
@@ -78,13 +78,13 @@ const editImageBackground = {
 };
 
 module.exports = {
-  getAllUsers,
-  getUserByAddress,
-  addFriendList,
-  unfriendList,
-  addFavoriteNFT,
-  removeFavoriteNFT,
-  editInfoUser,
-  editImageProfile,
-  editImageBackground,
+  getAllUsersValidate,
+  getUserByAddressValidate,
+  addFriendListValidate,
+  unfriendListValidate,
+  addFavoriteNFTValidate,
+  removeFavoriteNFTValidate,
+  editInfoUserValidate,
+  editImageProfileValidate,
+  editImageBackgroundValidate,
 };

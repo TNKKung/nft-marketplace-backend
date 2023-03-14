@@ -1,6 +1,6 @@
 const joi = require("joi");
 
-const createCollection = {
+const createCollectionValidate = {
   body: joi.object().keys({
     owner: joi.string().required(),
     collectionName: joi.string().required(),
@@ -8,29 +8,29 @@ const createCollection = {
   }),
 };
 
-const getAllCollection = {
+const getAllCollectionValidate = {
   body: joi.object().keys({}),
 };
 
-const getCollectionById = {
+const getCollectionByIdValidate = {
   query: joi.object().keys({
     id: joi.string().required(),
   }),
 };
 
-const getCollectionByOwner = {
+const getCollectionByOwnerValidate = {
   query: joi.object().keys({
     owner: joi.string().required(),
   }),
 };
 
-const deleteCollectionById = {
+const deleteCollectionByIdValidate = {
   query: joi.object().keys({
     id: joi.string().required(),
   }),
 };
 
-const updateCollection = {
+const updateCollectionValidate = {
   body: joi.object().keys({
     id: joi.string().required(),
     collectionName: joi.string().required(),
@@ -39,10 +39,10 @@ const updateCollection = {
 };
 
 module.exports = {
-  createCollection,
-  getAllCollection,
-  getCollectionById,
-  getCollectionByOwner,
-  deleteCollectionById,
-  updateCollection,
+  createCollectionValidate,
+  getAllCollectionValidate,
+  getCollectionByIdValidate,
+  getCollectionByOwnerValidate,
+  deleteCollectionByIdValidate,
+  updateCollectionValidate,
 };

@@ -1,22 +1,26 @@
 const joi = require("joi");
 
-const loginMessage = {
+const loginMessageValidate = {
   query: joi.object().keys({
     address: joi.string().required(),
   }),
 };
 
-const authJWT = {
+const authJWTValidate = {
   query: joi.object().keys({
     address: joi.string().required(),
     signature: joi.string().required(),
   }),
 };
 
-const requestAccessToken = {
+const requestAccessTokenValidate = {
   query: joi.object().keys({
     address: joi.string().required(),
   }),
 };
 
-module.exports = { loginMessage, authJWT, requestAccessToken };
+module.exports = {
+  loginMessageValidate,
+  authJWTValidate,
+  requestAccessTokenValidate,
+};

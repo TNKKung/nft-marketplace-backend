@@ -1,6 +1,6 @@
 const joi = require("joi");
 
-const createNFT = {
+const createNFTValidate = {
   body: joi.object().keys({
     ownerAddress: joi.string().required(),
     nameNFT: joi.string().required(),
@@ -12,29 +12,29 @@ const createNFT = {
   }),
 };
 
-const getAllNFT = {
+const getAllNFTValidate = {
   body: joi.object().keys({}),
 };
 
-const getNFTByOwner = {
+const getNFTByOwnerValidate = {
   query: joi.object().keys({
     address: joi.string().required(),
   }),
 };
 
-const getNFTCreatedByOwner = {
+const getNFTCreatedByOwnerValidate = {
   query: joi.object().keys({
     address: joi.string().required(),
   }),
 };
 
-const getNFTByTokenId = {
+const getNFTByTokenIdValidate = {
   query: joi.object().keys({
     tokenId: joi.number().required(),
   }),
 };
 
-const listingForSale = {
+const listingForSaleValidate = {
   query: joi.object().keys({
     ownerAddress: joi.string().required(),
   }),
@@ -43,7 +43,7 @@ const listingForSale = {
   }),
 };
 
-const unlistingForSale = {
+const unlistingForSaleValidate = {
   query: joi.object().keys({
     ownerAddress: joi.string().required(),
   }),
@@ -52,35 +52,35 @@ const unlistingForSale = {
   }),
 };
 
-const updateCollectionOfNft = {
+const updateCollectionOfNftValidate = {
   body: joi.object().keys({
     id: joi.string().required(),
     collectionId: joi.string().required(),
   }),
 };
 
-const updateOwnerNFT = {
+const updateOwnerNFTValidate = {
   body: joi.object().keys({
     id: joi.string().required(),
     contract: joi.string().required(),
   }),
 };
 
-const deleteNFTByTokenId = {
+const deleteNFTByTokenIdValidate = {
   query: joi.object().keys({
     id: joi.string().required(),
   }),
 };
 
 module.exports = {
-  createNFT,
-  getAllNFT,
-  getNFTByOwner,
-  getNFTByTokenId,
-  deleteNFTByTokenId,
-  listingForSale,
-  unlistingForSale,
-  updateCollectionOfNft,
-  updateOwnerNFT,
-  getNFTCreatedByOwner,
+  createNFTValidate,
+  getAllNFTValidate,
+  getNFTByOwnerValidate,
+  getNFTByTokenIdValidate,
+  deleteNFTByTokenIdValidate,
+  listingForSaleValidate,
+  unlistingForSaleValidate,
+  updateCollectionOfNftValidate,
+  updateOwnerNFTValidate,
+  getNFTCreatedByOwnerValidate,
 };
