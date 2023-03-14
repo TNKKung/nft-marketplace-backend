@@ -44,20 +44,11 @@ const getAllSearchListService = async (keyword) => {
     doc.data().collectionName.includes(keyword)
   );
 
-  return [
-    {
-      type: "nft",
-      lists: filterNFTs.map((nft) => nft.data()),
-    },
-    {
-      type: "user",
-      lists: filterUsers.map((user) => user.data()),
-    },
-    {
-      type: "collection",
-      lists: filterCollections.map((collection) => collection.data()),
-    },
-  ];
+  return {
+    nft: filterNFTs.map((nft) => nft.data()),
+    user: filterUsers.map((user) => user.data()),
+    collection: filterCollections.map((collection) => collection.data()),
+  };
 };
 
 const getNFTsSearchService = async (keyword) => {
