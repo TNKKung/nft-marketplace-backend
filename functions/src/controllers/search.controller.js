@@ -6,7 +6,7 @@ const catchAsync = require("../utils/catchAsync");
 
 const allSearchController = catchAsync(async (req, res) => {
   const { keyword } = req.query;
-  const response = await searchService.getAllSearchList(keyword);
+  const response = await searchService.getAllSearchListService(keyword);
 
   res.send({ response });
 });

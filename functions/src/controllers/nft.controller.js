@@ -9,7 +9,7 @@ const createNFTController = catchAsync(async (req, res) => {
 });
 
 const getAllNFTs = catchAsync(async (req, res) => {
-  const response = await nftService.getAllNFT();
+  const response = await nftService.getAllNFTService();
   res.status(httpStatus.CREATED).send({ response });
 });
 
@@ -27,48 +27,48 @@ const getNFTCreatedByOwnerController = catchAsync(async (req, res) => {
 
 const getNFTByTokenIdController = catchAsync(async (req, res) => {
   const { tokenId } = req.query;
-  const response = await nftService.getNFTByTokenId(tokenId);
+  const response = await nftService.getNFTByTokenIdService(tokenId);
   res.send({ response });
 });
 
 const deleteNFTByTokenIdController = catchAsync(async (req, res) => {
   const { id } = req.query;
-  const response = await nftService.deleteNFTByTokenId(id);
+  const response = await nftService.deleteNFTByTokenIdService(id);
   res.send({ response });
 });
 
 const listingForSaleController = catchAsync(async (req, res) => {
   const { id } = req.body;
   const { ownerAddress } = req.query;
-  const response = await nftService.listingForSale(id, ownerAddress);
+  const response = await nftService.listingForSaleService(id, ownerAddress);
   res.send({ response });
 });
 
 const unlistingForSaleController = catchAsync(async (req, res) => {
   const { id } = req.body;
   const { ownerAddress } = req.query;
-  const response = await nftService.unlistingForSale(id, ownerAddress);
+  const response = await nftService.unlistingForSaleService(id, ownerAddress);
   res.send({ response });
 });
 
 const updateCollectionOfNFTController = catchAsync(async (req, res) => {
-  const response = await nftService.updateCollectionOfNft(req.body);
+  const response = await nftService.updateCollectionOfNftService(req.body);
   res.send({ response });
 });
 
 const updateOwnerNFTController = catchAsync(async (req, res) => {
-  const response = await nftService.updateOwnerNFT(req.body);
+  const response = await nftService.updateOwnerNFTService(req.body);
   res.send({ response });
 });
 
 const addTransactionHashController = catchAsync(async (req, res) => {
-  const response = await nftService.addTransactionHash(req.body);
+  const response = await nftService.addTransactionHashService(req.body);
   res.send({ response });
 });
 
 const getAllTransaction = catchAsync(async (req, res) => {
   const { id } = req.query;
-  const response = await nftService.getAllTransaction(id);
+  const response = await nftService.getAllTransactionService(id);
   res.send({ response });
 });
 

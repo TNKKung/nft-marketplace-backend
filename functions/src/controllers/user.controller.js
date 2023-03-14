@@ -4,27 +4,33 @@ const catchAsync = require("../utils/catchAsync");
 const { userService } = require("../services");
 
 const getAllUserController = catchAsync(async (req, res) => {
-  const response = await userService.getAllUsers();
+  const response = await userService.getAllUsersService();
   res.status(httpStatus.CREATED).send({ response });
 });
 
 const getUserByAddressController = catchAsync(async (req, res) => {
   const { address } = req.query;
-  const response = await userService.getUserByAddress(address);
+  const response = await userService.getUserByAddressService(address);
   res.send({ response });
 });
 
 const addFriendListController = catchAsync(async (req, res) => {
   const { address } = req.query;
   const { friendAddress } = req.body;
-  const response = await userService.addFriendList(address, friendAddress);
+  const response = await userService.addFriendListService(
+    address,
+    friendAddress
+  );
   res.send({ response });
 });
 
 const unfriendListController = catchAsync(async (req, res) => {
   const { address } = req.query;
   const { friendAddress } = req.body;
-  const response = await userService.unfriendList(address, friendAddress);
+  const response = await userService.unfriendListService(
+    address,
+    friendAddress
+  );
   res.send({ response });
 });
 
@@ -57,7 +63,7 @@ const editImageProfileController = catchAsync(async (req, res) => {
 const editImageBackgroundController = catchAsync(async (req, res) => {
   const { address } = req.query;
   const { backgroundImage } = req.body;
-  const response = await userService.editImageBackground(
+  const response = await userService.editImageBackgroundService(
     address,
     backgroundImage
   );
