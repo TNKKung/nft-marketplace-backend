@@ -9,39 +9,39 @@ const router = express.Router();
 router.post(
   "/",
   jwtValidate,
-  validate(collectionValidation.createCollection),
+  validate(collectionValidation.createCollectionValidate),
   collectionController.createCollectionController
 );
 
 router.get(
   "/",
-  validate(collectionValidation.getAllCollection),
+  validate(collectionValidation.getAllCollectionValidate),
   collectionController.getAllCollectionController
 );
 
 router.get(
   "/getCollectionById",
-  validate(collectionValidation.getCollectionById),
+  validate(collectionValidation.getCollectionByIdValidate),
   collectionController.getCollectionByIdController
 );
 
 router.get(
   "/getCollectionByOwner",
-  validate(collectionValidation.getCollectionByOwner),
+  validate(collectionValidation.getCollectionByOwnerValidate),
   collectionController.getCollectionByOwnerController
 );
 
 router.delete(
   "/",
   jwtValidate,
-  validate(collectionValidation.deleteCollectionById),
+  validate(collectionValidation.deleteCollectionByIdValidate),
   collectionController.deleteCollectionByIdController
 );
 
 router.patch(
   "/",
   jwtValidate,
-  validate(collectionValidation.updateCollection),
+  validate(collectionValidation.updateCollectionValidate),
   collectionController.updateCollectionController
 );
 

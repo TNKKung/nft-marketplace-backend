@@ -6,73 +6,77 @@ const { nftController } = require("../controllers");
 
 const router = express.Router();
 
-router.get("/", validate(nftValidation.getAllNFT), nftController.getAllNFTs);
+router.get("/getAllTransaction", nftController.getAllTransaction);
+
+router.get(
+  "/",
+  validate(nftValidation.getAllNFTValidate),
+  nftController.getAllNFTs
+);
 
 router.get(
   "/getNFTByOwner",
-  validate(nftValidation.getNFTByOwner),
+  validate(nftValidation.getNFTByOwnerValidate),
   nftController.getNFTByOwnerController
 );
 
 router.get(
   "/getNFTCreatedByOwner",
-  validate(nftValidation.getNFTCreatedByOwner),
+  validate(nftValidation.getNFTCreatedByOwnerValidate),
   nftController.getNFTCreatedByOwnerController
 );
 
 router.get(
   "/getNFTByTokenId",
-  validate(nftValidation.getNFTByTokenId),
+  validate(nftValidation.getNFTByTokenIdValidate),
   nftController.getNFTByTokenIdController
 );
-
-router.get("/getAllTransaction", nftController.getAllTransaction);
 
 router.post(
   "/",
   jwtValidate,
-  validate(nftValidation.createNFT),
+  validate(nftValidation.createNFTValidate),
   nftController.createNFTController
 );
 
 router.post(
   "/addTransactionHash",
-  // jwtValidate,
+  jwtValidate,
   nftController.addTransactionHashController
 );
 
 router.delete(
   "/",
   jwtValidate,
-  validate(nftValidation.deleteNFTByTokenId),
+  validate(nftValidation.deleteNFTByTokenIdValidate),
   nftController.deleteNFTByTokenIdController
 );
 
 router.patch(
   "/",
   jwtValidate,
-  validate(nftValidation.updateCollectionOfNft),
+  validate(nftValidation.updateCollectionOfNftValidate),
   nftController.updateCollectionOfNFTController
 );
 
 router.patch(
   "/updateOwner",
   jwtValidate,
-  validate(nftValidation.updateOwnerNFT),
+  validate(nftValidation.updateOwnerNFTValidate),
   nftController.updateOwnerNFTController
 );
 
 router.patch(
   "/listingForSale",
   jwtValidate,
-  validate(nftValidation.listingForSale),
+  validate(nftValidation.listingForSaleValidate),
   nftController.listingForSaleController
 );
 
 router.patch(
   "/unlistingForSale",
   jwtValidate,
-  validate(nftValidation.unlistingForSale),
+  validate(nftValidation.unlistingForSaleValidate),
   nftController.unlistingForSaleController
 );
 

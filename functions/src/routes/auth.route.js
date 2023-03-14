@@ -8,20 +8,20 @@ const router = express.Router();
 
 router.get(
   "/message",
-  validate(authValidation.loginMessage),
+  validate(authValidation.loginMessageValidate),
   authController.messageController
 );
 
 router.get(
   "/jwt",
-  validate(authValidation.authJWT),
+  validate(authValidation.authJWTValidate),
   authController.authJWTController
 );
 
 router.get(
   "/requestAccessToken",
   jwtValidate,
-  validate(authValidation.requestAccessToken),
+  validate(authValidation.requestAccessTokenValidate),
   authController.requestAccessToken
 );
 
