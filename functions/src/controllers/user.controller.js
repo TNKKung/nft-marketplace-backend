@@ -36,27 +36,27 @@ const unfriendListController = catchAsync(async (req, res) => {
 
 const addFavoriteNFTController = catchAsync(async (req, res) => {
   const { address } = req.query;
-  const response = await userService.addFavoriteNFT(address, req.body);
+  const response = await userService.addFavoriteNFTService(address, req.body);
   res.send({ response });
 });
 
 const removeFavoriteNFTController = catchAsync(async (req, res) => {
   const { address } = req.query;
   const { tokenId } = req.body;
-  const response = await userService.removeFavoriteNFT(address, tokenId);
+  const response = await userService.removeFavoriteNFTService(address, tokenId);
   res.send({ response });
 });
 
 const editInfoUserController = catchAsync(async (req, res) => {
   const { address } = req.query;
-  const response = await userService.editInfoUser(address, req.body);
+  const response = await userService.editInfoUserService(address, req.body);
   res.send({ response });
 });
 
 const editImageProfileController = catchAsync(async (req, res) => {
   const { address } = req.query;
   const { profileImage } = req.body;
-  const response = await userService.editImageProfile(address, profileImage);
+  const response = await userService.editImageProfileService(address, profileImage);
   res.send({ response });
 });
 
