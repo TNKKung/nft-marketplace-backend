@@ -20,17 +20,13 @@ const getAllUsersService = async () => {
 const getUserByAddressService = async (address) => {
   const storeUser = await storeUsers.get();
 
-  // storeUser.docs.map((doc) => tempStore.push(doc.data()));
-  // for (let i = 0; i < tempStore.length; i++) {
-  //   if (tempStore[i].address === address) {
-  //     userOfAddress.push(tempStore[i]);
-  //   }
-  // }
-
   const filterData = storeUser.docs.filter(
     (doc) => doc.data().address === address
   );
-  return filterData[0].data();
+
+  const data = filterData.map((data) => data.data());
+
+  return data[0];
 };
 
 const addFriendListService = async (address, friendAddress) => {
