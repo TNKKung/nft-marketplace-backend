@@ -9,31 +9,31 @@ const { store } = require("../config/firebase");
 const storeUsers = store.collection("Users");
 dotenv.config({ path: path.join(__dirname, "../../.env") });
 
-const getAllUsers = async () => {
+const getAllUsersService = async () => {
   const users = await storeUsers.get();
-  const data = [];
 
-  users.docs.map((doc) => {
-    data.push({ ...doc.data() });
+  return users.docs.map((doc) => {
+    return { ...doc.data() };
   });
-
-  return data;
 };
 
-const getUserByAddress = async (address) => {
+const getUserByAddressService = async (address) => {
   const storeUser = await storeUsers.get();
-  let tempStore = [];
-  let userOfAddress = [];
-  storeUser.docs.map((doc) => tempStore.push(doc.data()));
-  for (let i = 0; i < tempStore.length; i++) {
-    if (tempStore[i].address === address) {
-      userOfAddress.push(tempStore[i]);
-    }
-  }
-  return userOfAddress;
+
+  // storeUser.docs.map((doc) => tempStore.push(doc.data()));
+  // for (let i = 0; i < tempStore.length; i++) {
+  //   if (tempStore[i].address === address) {
+  //     userOfAddress.push(tempStore[i]);
+  //   }
+  // }
+
+  const filterData = storeUser.docs.filter(
+    (doc) => doc.data().address === address
+  );
+  return filterData[0].data();
 };
 
-const addFriendList = async (address, friendAddress) => {
+const addFriendListService = async (address, friendAddress) => {
   const data = await storeUsers.doc(address).get();
   if (!data.exists) {
     console.log("No such document!");
@@ -54,7 +54,7 @@ const addFriendList = async (address, friendAddress) => {
   }
 };
 
-const unfriendList = async (address, friendAddress) => {
+const unfriendListService = async (address, friendAddress) => {
   const data = await storeUsers.doc(address).get();
   if (!data.exists) {
     console.log("No such document!");
@@ -82,7 +82,7 @@ const unfriendList = async (address, friendAddress) => {
   }
 };
 
-const addFavoriteNFT = async (address, body) => {
+const addFavoriteNFTService = async (address, body) => {
   const data = await storeUsers.doc(address).get();
   if (!data.exists) {
     console.log("No such document!");
@@ -121,7 +121,7 @@ const addFavoriteNFT = async (address, body) => {
   }
 };
 
-const removeFavoriteNFT = async (address, tokenId) => {
+const removeFavoriteNFTService = async (address, tokenId) => {
   const data = await storeUsers.doc(address).get();
   if (!data.exists) {
     console.log("No such document!");
@@ -149,7 +149,7 @@ const removeFavoriteNFT = async (address, tokenId) => {
   }
 };
 
-const editInfoUser = async (address, body) => {
+const editInfoUserService = async (address, body) => {
   const data = await storeUsers.doc(address).get();
   if (!data.exists) {
     console.log("No such document!");
@@ -170,7 +170,7 @@ const editInfoUser = async (address, body) => {
   }
 };
 
-const editImageProfile = async (address, image) => {
+const editImageProfileService = async (address, image) => {
   const data = await storeUsers.doc(address).get();
   if (!data.exists) {
     console.log("No such document!");
@@ -191,7 +191,7 @@ const editImageProfile = async (address, image) => {
   }
 };
 
-const editImageBackground = async (address, image) => {
+const editImageBackgroundService = async (address, image) => {
   const data = await storeUsers.doc(address).get();
   if (!data.exists) {
     console.log("No such document!");
@@ -213,13 +213,13 @@ const editImageBackground = async (address, image) => {
 };
 
 module.exports = {
-  getAllUsers,
-  getUserByAddress,
-  addFriendList,
-  unfriendList,
-  addFavoriteNFT,
-  removeFavoriteNFT,
-  editInfoUser,
-  editImageProfile,
-  editImageBackground,
+  getAllUsersService,
+  getUserByAddressService,
+  addFriendListService,
+  unfriendListService,
+  addFavoriteNFTService,
+  removeFavoriteNFTService,
+  editInfoUserService,
+  editImageProfileService,
+  editImageBackgroundService,
 };

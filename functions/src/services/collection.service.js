@@ -3,7 +3,7 @@ const { store } = require("../config/firebase");
 const storeCollection = store.collection("Collections");
 const storeNFT = store.collection("NFTs");
 
-const createCollection = async (body) => {
+const createCollectionService = async (body) => {
   const response = await storeCollection.add({
     owner: body.owner,
     collectionName: body.collectionName,
@@ -25,14 +25,15 @@ const createCollection = async (body) => {
   }
 };
 
-const getAllCollection = async () => {
+const getAllCollectionService = async () => {
   const collections = await storeCollection.get();
-  const returnStore = [];
-  collections.docs.map((doc) => returnStore.push({ ...doc.data() }));
-  return returnStore;
+
+  return collections.docs.map((doc) => {
+    return doc.data();
+  });
 };
 
-const getCollectionById = async (id) => {
+const getCollectionByIdService = async (id) => {
   const collections = await storeCollection.get();
   const NFTs = await storeNFT.get();
   const returnStore = [];
@@ -50,7 +51,7 @@ const getCollectionById = async (id) => {
   }
 };
 
-const getCollectionByOwner = async (owner) => {
+const getCollectionByOwnerService = async (owner) => {
   const storeCollection = await store.collection("Collections").get();
   const storeNFT = await store.collection("NFTs").get();
 
@@ -73,7 +74,7 @@ const getCollectionByOwner = async (owner) => {
   return responseData;
 };
 
-const deleteCollectionById = async (id) => {
+const deleteCollectionByIdService = async (id) => {
   const NFTs = await storeNFT.get();
   NFTs.docs.map(async (doc) => {
     if (doc.data().collectionId === id) {
@@ -92,7 +93,7 @@ const deleteCollectionById = async (id) => {
   return "Delete collection success";
 };
 
-const updateCollection = async (body) => {
+const updateCollectionService = async (body) => {
   const data = await storeCollection.doc(body.id).get();
   if (!data.exists) {
     console.log("No such document!");
@@ -108,10 +109,10 @@ const updateCollection = async (body) => {
 };
 
 module.exports = {
-  createCollection,
-  getAllCollection,
-  getCollectionById,
-  getCollectionByOwner,
-  deleteCollectionById,
-  updateCollection,
+  createCollectionService,
+  getAllCollectionService,
+  getCollectionByIdService,
+  getCollectionByOwnerService,
+  deleteCollectionByIdService,
+  updateCollectionService,
 };
