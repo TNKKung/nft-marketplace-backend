@@ -5,12 +5,6 @@ const getAllSearchListService = async (keyword) => {
   const storeUsers = await store.collection("Users").get();
   const storeCollections = await store.collection("Collections").get();
 
-  let searchList = [
-    { type: "user", lists: [] },
-    { type: "nft", lists: [] },
-    { type: "collection", lists: [] },
-  ];
-
   // storeNFTs.docs.map((doc) => {
   //   if (
   //     doc.data().tokenId.toString().includes(keyword) ||
@@ -35,39 +29,73 @@ const getAllSearchListService = async (keyword) => {
 
   // return searchList;
 
+  const filterNFTs = storeNFTs.docs.filter(
+    (doc) =>
+      doc.data().tokenId.toString().includes(keyword) ||
+      doc.data().ownerAddress === keyword ||
+      doc.data().nameNFT.includes(keyword)
+  );
+
+  const filterUsers = storeUsers.docs.filter(
+    (doc) => doc.data().address === keyword || doc.data().name.includes(keyword)
+  );
+
+  const filterCollections = storeCollections.docs.filter((doc) =>
+    doc.data().collectionName.includes(keyword)
+  );
+
   return [
     {
       type: "nft",
-      lists: storeNFTs.docs.filter((doc) => {
-        if (
-          doc.data().tokenId.toString().includes(keyword) ||
-          doc.data().ownerAddress === keyword ||
-          doc.data().nameNFT.includes(keyword)
-        ) {
-          return doc.data();
-        }
-      }),
+      lists: filterNFTs.map((nft) => nft.data()),
     },
     {
       type: "user",
-      lists: storeUsers.docs.filter((doc) => {
-        if (
-          doc.data().address === keyword ||
-          doc.data().name.includes(keyword)
-        ) {
-          return doc.data();
-        }
-      }),
+      lists: filterUsers.map((user) => user.data()),
     },
     {
       type: "collection",
-      lists: storeCollections.docs.filter((doc) => {
-        if (doc.data().collectionName.includes(keyword)) {
-          return doc.data();
-        }
-      }),
+      lists: filterCollections.map((collection) => collection.data()),
     },
   ];
 };
 
-module.exports = { getAllSearchListService };
+const getNFTsSearchService = async (keyword) => {
+  const storeNFTs = await store.collection("NFTs").get();
+
+  const filterNFTs = storeNFTs.docs.filter(
+    (doc) =>
+      doc.data().tokenId.toString().includes(keyword) ||
+      doc.data().ownerAddress === keyword ||
+      doc.data().nameNFT.includes(keyword)
+  );
+
+  return filterNFTs.map((nft) => nft.data());
+};
+
+const getUsersSearchService = async (keyword) => {
+  const storeUsers = await store.collection("Users").get();
+
+  const filterUsers = storeUsers.docs.filter(
+    (doc) => doc.data().address === keyword || doc.data().name.includes(keyword)
+  );
+
+  return filterUsers.map((user) => user.data());
+};
+
+const getCollectionSearchService = async (keyword) => {
+  const storeCollections = await store.collection("Collections").get();
+
+  const filterCollections = storeCollections.docs.filter((doc) =>
+    doc.data().collectionName.includes(keyword)
+  );
+
+  return filterCollections.map((collection) => collection.data());
+};
+
+module.exports = {
+  getAllSearchListService,
+  getNFTsSearchService,
+  getUsersSearchService,
+  getCollectionSearchService,
+};
