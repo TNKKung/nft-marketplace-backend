@@ -293,7 +293,7 @@ const deleteNFTByTokenIdService = async (tokenId) => {
   return "delete NFT Success";
 };
 
-const listingForSale = async (id, ownerAddress) => {
+const listingForSaleService = async (id, ownerAddress) => {
   const data = await storeNFTs.doc(id).get();
   if (!data.exists) {
     console.log("No such document!");
@@ -415,7 +415,7 @@ const updateOwnerNFTService = async (body) => {
       category: data.data().category,
       createdCollaborator: data.data().createdCollaborator,
       transactionHash: data.data().transactionHash,
-      statusSale: data.data().statusSale,
+      statusSale: false,
       createdOwner: data.data().createdOwner,
     });
   }
@@ -430,7 +430,7 @@ module.exports = {
   deleteNFTByTokenIdService,
   updateCollectionOfNftService,
   updateOwnerNFTService,
-  listingForSale,
+  listingForSaleService,
   unlistingForSaleService,
   addTransactionHashService,
   getAllTransactionService,
