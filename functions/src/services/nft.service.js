@@ -144,24 +144,86 @@ const getAllTransactionService = async (id) => {
 
 const getNFTByOwnerService = async (address) => {
   const NFTs = await storeNFTs.get();
-  const dataNFTs = NFTs.docs.map((doc) => doc.data());
-  const storeOfOwner = dataNFTs.filter(
-    (dataNFT) => dataNFT.ownerAddress === address
+  const provider = getProvider();
+  const web3 = new Web3();
+
+  const signer = new ethers.Wallet(privateKey, provider);
+
+  const abi = ["function tokenURI(uint256 tokenId) view returns (string)"];
+
+  const contract = new ethers.Contract(nftContract, abi, signer);
+
+  const abiMarketplace = [
+    "function priceFromTokenId(uint256 tokenId) view returns (uint256)",
+  ];
+
+  const marketplace = new ethers.Contract(
+    marketplaceContract,
+    abiMarketplace,
+    signer
   );
-  return storeOfOwner;
+
+  const dataNFTs = NFTs.docs.filter(
+    (doc) => doc.data().ownerAddress === address
+  );
+
+  return Promise.all(
+    dataNFTs.map(async (doc) => {
+      const result = await contract.functions.tokenURI(doc.data().tokenId);
+      const resultPrice = await marketplace.functions.priceFromTokenId(
+        doc.data().tokenId
+      );
+      const wei = web3.utils.toBN(resultPrice[0]["_hex"]).toString();
+      const eth = ethers.utils.formatEther(wei);
+      return {
+        tokenId: doc.data().tokenId,
+        nameNFT: doc.data().nameNFT,
+        tokenURI: result[0],
+        price: doc.data().statusSale ? eth : "",
+      };
+    })
+  );
 };
 
 const getNFTCreatedByOwnerService = async (address) => {
   const NFTs = await storeNFTs.get();
+  const provider = getProvider();
+  const web3 = new Web3();
 
-  const filterData = NFTs.docs.filter(
+  const signer = new ethers.Wallet(privateKey, provider);
+
+  const abi = ["function tokenURI(uint256 tokenId) view returns (string)"];
+
+  const contract = new ethers.Contract(nftContract, abi, signer);
+
+  const abiMarketplace = [
+    "function priceFromTokenId(uint256 tokenId) view returns (uint256)",
+  ];
+
+  const marketplace = new ethers.Contract(
+    marketplaceContract,
+    abiMarketplace,
+    signer
+  );
+
+  const dataNFTs = NFTs.docs.filter(
     (doc) => doc.data().createdOwner === address
   );
 
   return Promise.all(
-    filterData.map(async (doc) => {
+    dataNFTs.map(async (doc) => {
       const result = await contract.functions.tokenURI(doc.data().tokenId);
-      return { id: doc.id, ...doc.data(), tokenURI: result[0] };
+      const resultPrice = await marketplace.functions.priceFromTokenId(
+        doc.data().tokenId
+      );
+      const wei = web3.utils.toBN(resultPrice[0]["_hex"]).toString();
+      const eth = ethers.utils.formatEther(wei);
+      return {
+        tokenId: doc.data().tokenId,
+        nameNFT: doc.data().nameNFT,
+        tokenURI: result[0],
+        price: doc.data().statusSale ? eth : "",
+      };
     })
   );
 };
