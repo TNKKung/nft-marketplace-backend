@@ -96,23 +96,18 @@ const getCollectionByOwnerService = async (owner) => {
   const storeCollection = await store.collection("Collections").get();
   const storeNFT = await store.collection("NFTs").get();
 
-  const returnStore = [];
-  const responseData = [];
-  storeCollection.docs.map((doc) => {
-    const listNFT = [];
-    storeNFT.docs.map((Doc) => {
-      if (Doc.data().collectionId === doc.data().collectionId) {
-        listNFT.push(Doc.data().tokenId);
-      }
-    });
-    returnStore.push({ id: doc.id, ...doc.data(), listNFT });
-  });
-  for (let i = 0; i < returnStore.length; i++) {
-    if (returnStore[i]["owner"] === owner) {
-      responseData.push(returnStore[i]);
-    }
-  }
-  return responseData;
+  const filterCollection = storeCollection.docs.filter(
+    (doc) => doc.data().owner === owner
+  );
+
+  return Promise.all(
+    filterCollection.map(async (collection) => {
+      const getCollection = await getCollectionByIdService(
+        collection.data().collectionId
+      );
+      return getCollection;
+    })
+  );
 };
 
 const deleteCollectionByIdService = async (id) => {
