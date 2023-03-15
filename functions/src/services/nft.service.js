@@ -89,57 +89,10 @@ const createNFTService = async (body) => {
 
 const getAllNFTService = async () => {
   const NFTs = await storeNFTs.get();
-  const provider = getProvider();
-  const web3 = new Web3();
 
-  const signer = new ethers.Wallet(privateKey, provider);
-
-  const abiNFT = ["function tokenURI(uint256 tokenId) view returns (string)"];
-
-  const contractNFT = new ethers.Contract(nftContract, abiNFT, signer);
-
-  const abiMarketplace = [
-    "function priceFromTokenId(uint256 tokenId) view returns (uint256)",
-  ];
-
-  const contractMarketplace = new ethers.Contract(
-    marketplaceContract,
-    abiMarketplace,
-    signer
-  );
-
-  return Promise.all(
-    NFTs.docs.map(async (doc) => {
-      const result = await contractNFT.functions.tokenURI(doc.data().tokenId);
-      const resultPrice = await contractMarketplace.functions.priceFromTokenId(
-        doc.data().tokenId
-      );
-      const wei = web3.utils.toBN(resultPrice[0]["_hex"]).toString();
-      const eth = ethers.utils.formatEther(wei);
-      return {
-        ...doc.data(),
-        tokenURI: result[0],
-        price: doc.data().statusSale ? eth : "",
-      };
-    })
-  );
-
-  // let returnData = []
-
-  // for (let i = 0; i < data.length; i++) {
-  //   const result = await contractNFT.functions.tokenURI(data[i].tokenId);
-  //   const resultPrice = await contractMarketplace.functions.priceFromTokenId(
-  //     data[i].tokenId
-  //   );
-  //   const wei = web3.utils.toBN(resultPrice[0]["_hex"]).toString();
-  //   const eth = ethers.utils.formatEther(wei);
-  //   returnData.push({
-  //     ...data[i],
-  //     tokenURI: result[0],
-  //     price: data[i].statusSale ? eth : "",
-  //   });
-  // }
-  // return returnData;
+  return NFTs.docs.map((doc) => {
+    return doc.data();
+  });
 };
 
 const getAllTransactionService = async (id) => {
@@ -187,44 +140,6 @@ const getAllTransactionService = async (id) => {
       }
     })
   );
-
-  // for (let i = 0; i < NFTs.data().transactionHash.length; i += 1) {
-  //   const hexHash = NFTs.data().transactionHash[i];
-  //   console.log(hexHash);
-  //   const transactionReceipts = await provider.getTransactionReceipt(hexHash);
-  //   const topic = transactionReceipts.logs[0].topics[0];
-
-  //   const tx = await web3.eth.getTransaction(hexHash);
-  //   const block = await web3.eth.getBlock(tx.blockNumber);
-  //   console.log("timestamp :", block.timestamp);
-
-  //   const date = new Date(block.timestamp * 1000);
-  //   const formatDate = date.toLocaleDateString();
-  //   const formatTime = date.toLocaleTimeString();
-
-  //   for (const event of abi) {
-  //     if (event.type !== "event") {
-  //       continue;
-  //     }
-  //     const eventSignature = web3.eth.abi.encodeEventSignature(event);
-  //     if (topic === eventSignature) {
-  //       const eventData = web3.eth.abi.decodeLog(
-  //         event.inputs,
-  //         transactionReceipts.logs[0].data,
-  //         transactionReceipts.logs[0].topics.slice(1)
-  //       );
-
-  //       temp.push({
-  //         event: event.name,
-  //         eventData: eventData,
-  //         date: formatDate,
-  //         time: formatTime,
-  //       });
-  //     }
-  //   }
-  // }
-
-  // return temp;
 };
 
 const getNFTByOwnerService = async (address) => {
@@ -254,7 +169,7 @@ const getNFTCreatedByOwnerService = async (address) => {
 const getNFTByTokenIdService = async (tokenId) => {
   const storeNFT = await storeNFTs.get();
   const provider = getProvider();
-  let nftOfTokenId = [];
+  const web3 = new Web3();
 
   const signer = new ethers.Wallet(privateKey, provider);
 
@@ -262,19 +177,15 @@ const getNFTByTokenIdService = async (tokenId) => {
 
   const contract = new ethers.Contract(nftContract, abi, signer);
 
-  // const storeNFTDatas = storeNFT.docs.map((doc) => {
-  //   return { id: doc.id, ...doc.data() };
-  // });
+  const abiMarketplace = [
+    "function priceFromTokenId(uint256 tokenId) view returns (uint256)",
+  ];
 
-  // for (let i = 0; i < storeNFTDatas.length; i++) {
-  //   if (storeNFTDatas[i].tokenId === tokenId) {
-  //     const result = await contract.functions.tokenURI(
-  //       storeNFTDatas[i].tokenId
-  //     );
-  //     nftOfTokenId.push({ ...storeNFTDatas[i], tokenURI: result[0] });
-  //   }
-  // }
-  // return nftOfTokenId;
+  const marketplace = new ethers.Contract(
+    marketplaceContract,
+    abiMarketplace,
+    signer
+  );
 
   const filterData = storeNFT.docs.filter(
     (doc) => doc.data().tokenId === tokenId
@@ -283,7 +194,17 @@ const getNFTByTokenIdService = async (tokenId) => {
   return Promise.all(
     filterData.map(async (doc) => {
       const result = await contract.functions.tokenURI(doc.data().tokenId);
-      return { id: doc.id, ...doc.data(), tokenURI: result[0] };
+      const resultPrice = await marketplace.functions.priceFromTokenId(
+        doc.data().tokenId
+      );
+      const wei = web3.utils.toBN(resultPrice[0]["_hex"]).toString();
+      const eth = ethers.utils.formatEther(wei);
+      return {
+        id: doc.id,
+        ...doc.data(),
+        tokenURI: result[0],
+        price: doc.data().statusSale ? eth : "",
+      };
     })
   );
 };
