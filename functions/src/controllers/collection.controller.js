@@ -13,6 +13,11 @@ const getAllCollectionController = catchAsync(async (req, res) => {
   res.status(200).send({ response });
 });
 
+const getCollectionExploreController = catchAsync(async (req, res) => {
+  const response = await collectionService.getAllExploreCollectionService();
+  res.send({ response });
+});
+
 const getCollectionByIdController = catchAsync(async (req, res) => {
   const response = await collectionService.getCollectionByIdService(
     req.query.id
@@ -45,4 +50,5 @@ module.exports = {
   getCollectionByOwnerController,
   deleteCollectionByIdController,
   updateCollectionController,
+  getCollectionExploreController,
 };

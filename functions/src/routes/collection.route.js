@@ -19,6 +19,8 @@ router.get(
   collectionController.getAllCollectionController
 );
 
+router.get("/random", collectionController.getCollectionExploreController);
+
 router.get(
   "/getCollectionById",
   validate(collectionValidation.getCollectionByIdValidate),

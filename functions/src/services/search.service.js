@@ -1,4 +1,19 @@
 const { store } = require("../config/firebase");
+const { ethers } = require("ethers");
+const dotenv = require("dotenv");
+const path = require("path");
+const Web3 = require("web3");
+
+const { getProvider } = require("../utils/provider");
+const {
+  privateKey,
+  nftContract,
+  marketplaceContract,
+} = require("../config/config");
+
+const storeCollection = store.collection("Collections");
+const storeNFT = store.collection("NFTs");
+const storeUser = store.collection("Users");
 
 const getAllSearchListService = async (keyword) => {
   const storeNFTs = await store.collection("NFTs").get();
@@ -51,13 +66,45 @@ const getUsersSearchService = async (keyword) => {
 };
 
 const getCollectionSearchService = async (keyword) => {
-  const storeCollections = await store.collection("Collections").get();
+  const collections = await storeCollection.get();
+  const NFTs = await storeNFT.get();
+  const provider = getProvider();
 
-  const filterCollections = storeCollections.docs.filter((doc) =>
+  const signer = new ethers.Wallet(privateKey, provider);
+
+  const abi = ["function tokenURI(uint256 tokenId) view returns (string)"];
+  const contract = new ethers.Contract(nftContract, abi, signer);
+
+  const filterCollections = collections.docs.filter((doc) =>
     doc.data().collectionName.includes(keyword)
   );
 
-  return filterCollections.map((collection) => collection.data());
+  return Promise.all(
+    filterCollections.map(async (data) => {
+      const filterNFTs = NFTs.docs.filter(
+        (doc) => doc.data().collectionId === data.data().collectionId
+      );
+
+      const nftInfo = filterNFTs.map((doc) => doc.data());
+      let result;
+      const user = await storeUser.doc(data.data().owner).get();
+      if (nftInfo[0]) {
+        result = await contract.functions.tokenURI(nftInfo[0].tokenId);
+        return {
+          ...data.data(),
+          nftImage: result,
+          ownerName: user.data().name,
+          profileImage: user.data().profileImage,
+        };
+      }
+      return {
+        ...data.data(),
+        nftImage: "",
+        ownerName: user.data().name,
+        profileImage: user.data().profileImage,
+      };
+    })
+  );
 };
 
 module.exports = {

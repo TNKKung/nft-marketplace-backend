@@ -10,9 +10,11 @@ const {
   nftContract,
   marketplaceContract,
 } = require("../config/config");
+const { randomNumber } = require("../utils/randomHelper");
 
 const storeCollection = store.collection("Collections");
 const storeNFT = store.collection("NFTs");
+const storeUser = store.collection("Users");
 
 dotenv.config({ path: path.join(__dirname, "../../.env") });
 
@@ -40,10 +42,83 @@ const createCollectionService = async (body) => {
 
 const getAllCollectionService = async () => {
   const collections = await storeCollection.get();
+  const NFTs = await storeNFT.get();
+  const provider = getProvider();
 
-  return collections.docs.map((doc) => {
+  const signer = new ethers.Wallet(privateKey, provider);
+
+  const abi = ["function tokenURI(uint256 tokenId) view returns (string)"];
+  const contract = new ethers.Contract(nftContract, abi, signer);
+
+  return Promise.all(
+    collections.docs.map(async (data) => {
+      const filterNFTs = NFTs.docs.filter(
+        (doc) => doc.data().collectionId === data.data().collectionId
+      );
+      const nftInfo = filterNFTs.map((doc) => doc.data());
+      let result;
+      const user = await storeUser.doc(data.data().owner).get();
+      if (nftInfo[0]) {
+        result = await contract.functions.tokenURI(nftInfo[0].tokenId);
+        return {
+          ...data.data(),
+          nftImage: result,
+          ownerName: user.data().name,
+          profileImage: user.data().profileImage,
+        };
+      }
+      return {
+        ...data.data(),
+        nftImage: "",
+        ownerName: user.data().name,
+        profileImage: user.data().profileImage,
+      };
+    })
+  );
+};
+
+const getAllExploreCollectionService = async () => {
+  const collections = await storeCollection.get();
+  const NFTs = await storeNFT.get();
+  const provider = getProvider();
+
+  const signer = new ethers.Wallet(privateKey, provider);
+
+  const abi = ["function tokenURI(uint256 tokenId) view returns (string)"];
+  const contract = new ethers.Contract(nftContract, abi, signer);
+
+  const data = collections.docs.map((doc) => {
     return doc.data();
   });
+
+  const showIndexCollection = randomNumber(data.length, 4);
+
+  return Promise.all(
+    showIndexCollection.map(async (index) => {
+      const filterNFTs = NFTs.docs.filter(
+        (doc) => doc.data().collectionId === data[index].collectionId
+      );
+
+      const nftInfo = filterNFTs.map((doc) => doc.data());
+      let result;
+      const user = await storeUser.doc(data[index].owner).get();
+      if (nftInfo[0]) {
+        result = await contract.functions.tokenURI(nftInfo[0].tokenId);
+        return {
+          ...data[index],
+          nftImage: result,
+          ownerName: user.data().name,
+          profileImage: user.data().profileImage,
+        };
+      }
+      return {
+        ...data[index],
+        nftImage: "",
+        ownerName: user.data().name,
+        profileImage: user.data().profileImage,
+      };
+    })
+  );
 };
 
 const getCollectionByIdService = async (id) => {
@@ -94,18 +169,41 @@ const getCollectionByIdService = async (id) => {
 
 const getCollectionByOwnerService = async (owner) => {
   const storeCollection = await store.collection("Collections").get();
-  const storeNFT = await store.collection("NFTs").get();
+  const NFTs = await storeNFT.get();
+  const provider = getProvider();
+
+  const signer = new ethers.Wallet(privateKey, provider);
+
+  const abi = ["function tokenURI(uint256 tokenId) view returns (string)"];
+  const contract = new ethers.Contract(nftContract, abi, signer);
 
   const filterCollection = storeCollection.docs.filter(
     (doc) => doc.data().owner === owner
   );
 
   return Promise.all(
-    filterCollection.map(async (collection) => {
-      const getCollection = await getCollectionByIdService(
-        collection.data().collectionId
+    filterCollection.map(async (data) => {
+      const filterNFTs = NFTs.docs.filter(
+        (doc) => doc.data().collectionId === data.data().collectionId
       );
-      return getCollection;
+      const nftInfo = filterNFTs.map((doc) => doc.data());
+      let result;
+      const user = await storeUser.doc(data.data().owner).get();
+      if (nftInfo[0]) {
+        result = await contract.functions.tokenURI(nftInfo[0].tokenId);
+        return {
+          ...data.data(),
+          nftImage: result,
+          ownerName: user.data().name,
+          profileImage: user.data().profileImage,
+        };
+      }
+      return {
+        ...data.data(),
+        nftImage: "",
+        ownerName: user.data().name,
+        profileImage: user.data().profileImage,
+      };
     })
   );
 };
@@ -147,6 +245,7 @@ const updateCollectionService = async (body) => {
 module.exports = {
   createCollectionService,
   getAllCollectionService,
+  getAllExploreCollectionService,
   getCollectionByIdService,
   getCollectionByOwnerService,
   deleteCollectionByIdService,
