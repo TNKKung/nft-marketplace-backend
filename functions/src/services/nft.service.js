@@ -95,6 +95,16 @@ const getAllNFTService = async () => {
   });
 };
 
+const getAllSaleNFTService = async () => {
+  const NFTs = await storeNFTs.get();
+
+  const filterNFT = NFTs.docs.filter((doc) => doc.data().statusSale === true);
+
+  return filterNFT.map((doc) => {
+    return doc.data();
+  });
+};
+
 const getAllTransactionService = async (id) => {
   const NFTs = await storeNFTs.doc(id).get();
 
@@ -179,6 +189,7 @@ const getNFTByOwnerService = async (address) => {
         tokenId: doc.data().tokenId,
         nameNFT: doc.data().nameNFT,
         tokenURI: result[0],
+        statusSale: doc.data().statusSale,
         price: doc.data().statusSale ? eth : "",
       };
     })
@@ -222,6 +233,7 @@ const getNFTCreatedByOwnerService = async (address) => {
         tokenId: doc.data().tokenId,
         nameNFT: doc.data().nameNFT,
         tokenURI: result[0],
+        statusSale: doc.data().statusSale,
         price: doc.data().statusSale ? eth : "",
       };
     })
@@ -408,6 +420,7 @@ const updateOwnerNFTService = async (body) => {
 module.exports = {
   createNFTService,
   getAllNFTService,
+  getAllSaleNFTService,
   getNFTByOwnerService,
   getNFTByTokenIdService,
   deleteNFTByTokenIdService,

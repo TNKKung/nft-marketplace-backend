@@ -8,11 +8,9 @@ const router = express.Router();
 
 router.get("/getAllTransaction", nftController.getAllTransaction);
 
-router.get(
-  "/",
-  validate(nftValidation.getAllNFTValidate),
-  nftController.getAllNFTs
-);
+router.get("/", nftController.getAllNFTsController);
+
+router.get("/sale", nftController.getAllSaleNFTsController);
 
 router.get(
   "/getNFTByOwner",

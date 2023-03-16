@@ -12,10 +12,6 @@ const createNFTValidate = {
   }),
 };
 
-const getAllNFTValidate = {
-  body: joi.object().keys({}),
-};
-
 const getNFTByOwnerValidate = {
   query: joi.object().keys({
     address: joi.string().required(),
@@ -74,7 +70,6 @@ const deleteNFTByTokenIdValidate = {
 
 module.exports = {
   createNFTValidate,
-  getAllNFTValidate,
   getNFTByOwnerValidate,
   getNFTByTokenIdValidate,
   deleteNFTByTokenIdValidate,

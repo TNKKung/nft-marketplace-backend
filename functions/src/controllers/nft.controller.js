@@ -8,9 +8,14 @@ const createNFTController = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send({ response });
 });
 
-const getAllNFTs = catchAsync(async (req, res) => {
+const getAllNFTsController = catchAsync(async (req, res) => {
   const response = await nftService.getAllNFTService();
-  res.status(httpStatus.CREATED).send({ response });
+  res.send({ response });
+});
+
+const getAllSaleNFTsController = catchAsync(async (req, res) => {
+  const response = await nftService.getAllSaleNFTService();
+  res.send({ response });
 });
 
 const getNFTByOwnerController = catchAsync(async (req, res) => {
@@ -74,7 +79,8 @@ const getAllTransaction = catchAsync(async (req, res) => {
 
 module.exports = {
   createNFTController,
-  getAllNFTs,
+  getAllNFTsController,
+  getAllSaleNFTsController,
   getNFTByOwnerController,
   getNFTByTokenIdController,
   deleteNFTByTokenIdController,
