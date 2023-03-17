@@ -123,12 +123,22 @@ const getInfoNFTService = async () => {
       const resultPrice = await marketplace.functions.priceFromTokenId(
         doc.data().tokenId
       );
+
+      const storeCollection = await store
+        .collection("Collections")
+        .doc(doc.data().collectionId)
+        .get();
+
       const wei = web3.utils.toBN(resultPrice[0]["_hex"]).toString();
       const eth = ethers.utils.formatEther(wei);
       return {
         tokenId: doc.data().tokenId,
         nameNFT: doc.data().nameNFT,
         tokenURI: result[0],
+        collectionName: storeCollection.data()
+          ? storeCollection.data().collectionName
+          : "",
+        category: doc.data().category,
         statusSale: doc.data().statusSale,
         price: doc.data().statusSale ? eth : "",
       };
@@ -175,12 +185,21 @@ const getInfoSaleNFTService = async () => {
       const resultPrice = await marketplace.functions.priceFromTokenId(
         doc.data().tokenId
       );
+      const storeCollection = await store
+        .collection("Collections")
+        .doc(doc.data().collectionId)
+        .get();
+
       const wei = web3.utils.toBN(resultPrice[0]["_hex"]).toString();
       const eth = ethers.utils.formatEther(wei);
       return {
         tokenId: doc.data().tokenId,
         nameNFT: doc.data().nameNFT,
         tokenURI: result[0],
+        collectionName: storeCollection.data()
+          ? storeCollection.data().collectionName
+          : "",
+        category: doc.data().category,
         statusSale: doc.data().statusSale,
         price: doc.data().statusSale ? eth : "",
       };
@@ -266,12 +285,20 @@ const getNFTByOwnerService = async (address) => {
       const resultPrice = await marketplace.functions.priceFromTokenId(
         doc.data().tokenId
       );
+      const storeCollection = await store
+        .collection("Collections")
+        .doc(doc.data().collectionId)
+        .get();
       const wei = web3.utils.toBN(resultPrice[0]["_hex"]).toString();
       const eth = ethers.utils.formatEther(wei);
       return {
         tokenId: doc.data().tokenId,
         nameNFT: doc.data().nameNFT,
         tokenURI: result[0],
+        collectionName: storeCollection.data()
+          ? storeCollection.data().collectionName
+          : "",
+        category: doc.data().category,
         statusSale: doc.data().statusSale,
         price: doc.data().statusSale ? eth : "",
       };
@@ -310,12 +337,20 @@ const getNFTCreatedByOwnerService = async (address) => {
       const resultPrice = await marketplace.functions.priceFromTokenId(
         doc.data().tokenId
       );
+      const storeCollection = await store
+        .collection("Collections")
+        .doc(doc.data().collectionId)
+        .get();
       const wei = web3.utils.toBN(resultPrice[0]["_hex"]).toString();
       const eth = ethers.utils.formatEther(wei);
       return {
         tokenId: doc.data().tokenId,
         nameNFT: doc.data().nameNFT,
         tokenURI: result[0],
+        collectionName: storeCollection.data()
+          ? storeCollection.data().collectionName
+          : "",
+        category: doc.data().category,
         statusSale: doc.data().statusSale,
         price: doc.data().statusSale ? eth : "",
       };
@@ -353,12 +388,20 @@ const getRandomNFTService = async (address) => {
       const resultPrice = await marketplace.functions.priceFromTokenId(
         dataNFTs[index].tokenId
       );
+      const storeCollection = await store
+        .collection("Collections")
+        .doc(dataNFTs[index].collectionId)
+        .get();
       const wei = web3.utils.toBN(resultPrice[0]["_hex"]).toString();
       const eth = ethers.utils.formatEther(wei);
       return {
         tokenId: dataNFTs[index].tokenId,
         nameNFT: dataNFTs[index].nameNFT,
         tokenURI: result[0],
+        collectionName: storeCollection.data()
+          ? storeCollection.data().collectionName
+          : "",
+        category: dataNFTs[index].category,
         statusSale: dataNFTs[index].statusSale,
         price: dataNFTs[index].statusSale ? eth : "",
       };
@@ -399,12 +442,20 @@ const getRandomNFTSaleService = async () => {
       const resultPrice = await marketplace.functions.priceFromTokenId(
         data[index].tokenId
       );
+      const storeCollection = await store
+        .collection("Collections")
+        .doc(data[index].collectionId)
+        .get();
       const wei = web3.utils.toBN(resultPrice[0]["_hex"]).toString();
       const eth = ethers.utils.formatEther(wei);
       return {
         tokenId: data[index].tokenId,
         nameNFT: data[index].nameNFT,
         tokenURI: result[0],
+        collectionName: storeCollection.data()
+          ? storeCollection.data().collectionName
+          : "",
+        category: data[index].category,
         statusSale: data[index].statusSale,
         price: data[index].statusSale ? eth : "",
       };
