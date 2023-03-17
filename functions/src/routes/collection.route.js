@@ -13,6 +13,8 @@ router.post(
   collectionController.createCollectionController
 );
 
+router.get("/length", collectionController.getLengthCollectionController);
+
 router.get(
   "/",
   validate(collectionValidation.getAllCollectionValidate),

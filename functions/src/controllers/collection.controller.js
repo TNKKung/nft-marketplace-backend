@@ -13,6 +13,11 @@ const getAllCollectionController = catchAsync(async (req, res) => {
   res.status(200).send({ response });
 });
 
+const getLengthCollectionController = catchAsync(async (req, res) => {
+  const response = await collectionService.getLengthCollection();
+  res.status(200).send({ response });
+});
+
 const getCollectionExploreController = catchAsync(async (req, res) => {
   const response = await collectionService.getAllExploreCollectionService();
   res.send({ response });
@@ -45,6 +50,7 @@ const updateCollectionController = catchAsync(async (req, res) => {
 
 module.exports = {
   createCollectionController,
+  getLengthCollectionController,
   getAllCollectionController,
   getCollectionByIdController,
   getCollectionByOwnerController,

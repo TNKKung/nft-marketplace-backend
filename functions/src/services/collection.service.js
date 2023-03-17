@@ -40,6 +40,12 @@ const createCollectionService = async (body) => {
   }
 };
 
+const getLengthCollection = async () => {
+  const collections = await storeCollection.get();
+
+  return collections.docs.map((doc) => doc.data());
+};
+
 const getAllCollectionService = async () => {
   const collections = await storeCollection.get();
   const NFTs = await storeNFT.get();
@@ -244,6 +250,7 @@ const updateCollectionService = async (body) => {
 
 module.exports = {
   createCollectionService,
+  getLengthCollection,
   getAllCollectionService,
   getAllExploreCollectionService,
   getCollectionByIdService,
