@@ -44,6 +44,24 @@ const getAllSearchListService = async (keyword) => {
 
 const getNFTsSearchService = async (keyword) => {
   const storeNFTs = await store.collection("NFTs").get();
+  const provider = getProvider();
+  const web3 = new Web3();
+
+  const signer = new ethers.Wallet(privateKey, provider);
+
+  const abi = ["function tokenURI(uint256 tokenId) view returns (string)"];
+
+  const contract = new ethers.Contract(nftContract, abi, signer);
+
+  const abiMarketplace = [
+    "function priceFromTokenId(uint256 tokenId) view returns (uint256)",
+  ];
+
+  const marketplace = new ethers.Contract(
+    marketplaceContract,
+    abiMarketplace,
+    signer
+  );
 
   const filterNFTs = storeNFTs.docs.filter(
     (doc) =>
@@ -52,7 +70,31 @@ const getNFTsSearchService = async (keyword) => {
       doc.data().nameNFT.includes(keyword)
   );
 
-  return filterNFTs.map((nft) => nft.data());
+  return Promise.all(
+    filterNFTs.map(async (doc) => {
+      const result = await contract.functions.tokenURI(doc.data().tokenId);
+      const resultPrice = await marketplace.functions.priceFromTokenId(
+        doc.data().tokenId
+      );
+      const storeCollection = await store
+        .collection("Collections")
+        .doc(doc.data().collectionId)
+        .get();
+      const wei = web3.utils.toBN(resultPrice[0]["_hex"]).toString();
+      const eth = ethers.utils.formatEther(wei);
+      return {
+        tokenId: doc.data().tokenId,
+        nameNFT: doc.data().nameNFT,
+        tokenURI: result[0],
+        collectionName: storeCollection.data()
+          ? storeCollection.data().collectionName
+          : "",
+        category: doc.data().category,
+        statusSale: doc.data().statusSale,
+        price: doc.data().statusSale ? eth : "",
+      };
+    })
+  );
 };
 
 const getUsersSearchService = async (keyword) => {
