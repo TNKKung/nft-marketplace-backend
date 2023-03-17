@@ -5,6 +5,7 @@ const path = require("path");
 const Web3 = require("web3");
 
 const { getProvider } = require("../utils/provider");
+const { randomNumber } = require("../utils/randomHelper");
 const {
   privateKey,
   nftContract,
@@ -95,6 +96,46 @@ const getAllNFTService = async () => {
   });
 };
 
+const getInfoNFTService = async () => {
+  const NFTs = await storeNFTs.get();
+  const provider = getProvider();
+  const web3 = new Web3();
+
+  const signer = new ethers.Wallet(privateKey, provider);
+
+  const abi = ["function tokenURI(uint256 tokenId) view returns (string)"];
+
+  const contract = new ethers.Contract(nftContract, abi, signer);
+
+  const abiMarketplace = [
+    "function priceFromTokenId(uint256 tokenId) view returns (uint256)",
+  ];
+
+  const marketplace = new ethers.Contract(
+    marketplaceContract,
+    abiMarketplace,
+    signer
+  );
+
+  return Promise.all(
+    NFTs.docs.map(async (doc) => {
+      const result = await contract.functions.tokenURI(doc.data().tokenId);
+      const resultPrice = await marketplace.functions.priceFromTokenId(
+        doc.data().tokenId
+      );
+      const wei = web3.utils.toBN(resultPrice[0]["_hex"]).toString();
+      const eth = ethers.utils.formatEther(wei);
+      return {
+        tokenId: doc.data().tokenId,
+        nameNFT: doc.data().nameNFT,
+        tokenURI: result[0],
+        statusSale: doc.data().statusSale,
+        price: doc.data().statusSale ? eth : "",
+      };
+    })
+  );
+};
+
 const getAllSaleNFTService = async () => {
   const NFTs = await storeNFTs.get();
 
@@ -103,6 +144,48 @@ const getAllSaleNFTService = async () => {
   return filterNFT.map((doc) => {
     return doc.data();
   });
+};
+
+const getInfoSaleNFTService = async () => {
+  const NFTs = await storeNFTs.get();
+  const provider = getProvider();
+  const web3 = new Web3();
+
+  const signer = new ethers.Wallet(privateKey, provider);
+
+  const abi = ["function tokenURI(uint256 tokenId) view returns (string)"];
+
+  const contract = new ethers.Contract(nftContract, abi, signer);
+
+  const abiMarketplace = [
+    "function priceFromTokenId(uint256 tokenId) view returns (uint256)",
+  ];
+
+  const marketplace = new ethers.Contract(
+    marketplaceContract,
+    abiMarketplace,
+    signer
+  );
+
+  const filterNFT = NFTs.docs.filter((doc) => doc.data().statusSale === true);
+
+  return Promise.all(
+    filterNFT.map(async (doc) => {
+      const result = await contract.functions.tokenURI(doc.data().tokenId);
+      const resultPrice = await marketplace.functions.priceFromTokenId(
+        doc.data().tokenId
+      );
+      const wei = web3.utils.toBN(resultPrice[0]["_hex"]).toString();
+      const eth = ethers.utils.formatEther(wei);
+      return {
+        tokenId: doc.data().tokenId,
+        nameNFT: doc.data().nameNFT,
+        tokenURI: result[0],
+        statusSale: doc.data().statusSale,
+        price: doc.data().statusSale ? eth : "",
+      };
+    })
+  );
 };
 
 const getAllTransactionService = async (id) => {
@@ -235,6 +318,95 @@ const getNFTCreatedByOwnerService = async (address) => {
         tokenURI: result[0],
         statusSale: doc.data().statusSale,
         price: doc.data().statusSale ? eth : "",
+      };
+    })
+  );
+};
+
+const getRandomNFTService = async (address) => {
+  const NFTs = await storeNFTs.get();
+  const provider = getProvider();
+  const web3 = new Web3();
+
+  const signer = new ethers.Wallet(privateKey, provider);
+
+  const abi = ["function tokenURI(uint256 tokenId) view returns (string)"];
+
+  const contract = new ethers.Contract(nftContract, abi, signer);
+
+  const abiMarketplace = [
+    "function priceFromTokenId(uint256 tokenId) view returns (uint256)",
+  ];
+
+  const marketplace = new ethers.Contract(
+    marketplaceContract,
+    abiMarketplace,
+    signer
+  );
+
+  const dataNFTs = NFTs.docs.map((doc) => doc.data());
+  const showIndexNFT = randomNumber(dataNFTs.length, 4);
+
+  return Promise.all(
+    showIndexNFT.map(async (index) => {
+      const result = await contract.functions.tokenURI(dataNFTs[index].tokenId);
+      const resultPrice = await marketplace.functions.priceFromTokenId(
+        dataNFTs[index].tokenId
+      );
+      const wei = web3.utils.toBN(resultPrice[0]["_hex"]).toString();
+      const eth = ethers.utils.formatEther(wei);
+      return {
+        tokenId: dataNFTs[index].tokenId,
+        nameNFT: dataNFTs[index].nameNFT,
+        tokenURI: result[0],
+        statusSale: dataNFTs[index].statusSale,
+        price: dataNFTs[index].statusSale ? eth : "",
+      };
+    })
+  );
+};
+
+const getRandomNFTSaleService = async () => {
+  const NFTs = await storeNFTs.get();
+  const provider = getProvider();
+  const web3 = new Web3();
+
+  const signer = new ethers.Wallet(privateKey, provider);
+
+  const abi = ["function tokenURI(uint256 tokenId) view returns (string)"];
+
+  const contract = new ethers.Contract(nftContract, abi, signer);
+
+  const abiMarketplace = [
+    "function priceFromTokenId(uint256 tokenId) view returns (uint256)",
+  ];
+
+  const marketplace = new ethers.Contract(
+    marketplaceContract,
+    abiMarketplace,
+    signer
+  );
+
+  const filterNFTs = NFTs.docs.filter((doc) => doc.data().statusSale === true);
+
+  const data = filterNFTs.map((doc) => doc.data());
+
+  const showIndexNFT = randomNumber(data.length, 4);
+
+  return Promise.all(
+    showIndexNFT.map(async (index) => {
+      const result = await contract.functions.tokenURI(data[index].tokenId);
+      const resultPrice = await marketplace.functions.priceFromTokenId(
+        data[index].tokenId
+      );
+      const wei = web3.utils.toBN(resultPrice[0]["_hex"]).toString();
+      const eth = ethers.utils.formatEther(wei);
+      return {
+        tokenId: data[index].tokenId,
+        nameNFT: data[index].nameNFT,
+        tokenURI: result[0],
+        statusSale: data[index].statusSale,
+        price: data[index].statusSale ? eth : "",
       };
     })
   );
@@ -420,9 +592,13 @@ const updateOwnerNFTService = async (body) => {
 module.exports = {
   createNFTService,
   getAllNFTService,
+  getInfoNFTService,
   getAllSaleNFTService,
+  getInfoSaleNFTService,
   getNFTByOwnerService,
   getNFTByTokenIdService,
+  getRandomNFTService,
+  getRandomNFTSaleService,
   deleteNFTByTokenIdService,
   updateCollectionOfNftService,
   updateOwnerNFTService,

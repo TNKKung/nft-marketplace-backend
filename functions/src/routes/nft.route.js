@@ -12,6 +12,14 @@ router.get("/", nftController.getAllNFTsController);
 
 router.get("/sale", nftController.getAllSaleNFTsController);
 
+router.get("/random", nftController.getRandomNFTController);
+
+router.get("/randomNFTSale", nftController.getRandomNFTSaleController);
+
+router.get("/info", nftController.getInfoNFTsController);
+
+router.get("/infoSale", nftController.getInfoSaleNFTsController);
+
 router.get(
   "/getNFTByOwner",
   validate(nftValidation.getNFTByOwnerValidate),
