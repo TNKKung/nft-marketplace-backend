@@ -1,10 +1,15 @@
-// const { ethers } = require("ethers");
+const { ethers } = require("ethers");
 const dotenv = require("dotenv");
 const path = require("path");
+const Web3 = require("web3");
 
 const { store } = require("../config/firebase");
-// const { getProvider } = require("../utils/provider");
-// const config = require("../config/config");
+const { getProvider } = require("../utils/provider");
+const {
+  privateKey,
+  nftContract,
+  marketplaceContract,
+} = require("../config/config");
 
 const storeUsers = store.collection("Users");
 dotenv.config({ path: path.join(__dirname, "../../.env") });
@@ -84,16 +89,44 @@ const addFavoriteNFTService = async (address, body) => {
     console.log("No such document!");
   } else {
     const storeNFTs = await store.collection("NFTs").get();
-    const dataNFTs = [];
-    storeNFTs.docs.map((doc) => {
-      dataNFTs.push({ ...doc.data() });
-    });
-    let NFT;
-    for (let i = 0; i < dataNFTs.length; i++) {
-      if (dataNFTs[i].tokenId === body.tokenId) {
-        NFT = dataNFTs[i];
-      }
-    }
+    const provider = getProvider();
+    const web3 = new Web3();
+
+    const signer = new ethers.Wallet(privateKey, provider);
+
+    const abi = ["function tokenURI(uint256 tokenId) view returns (string)"];
+
+    const contract = new ethers.Contract(nftContract, abi, signer);
+
+    const abiMarketplace = [
+      "function priceFromTokenId(uint256 tokenId) view returns (uint256)",
+    ];
+
+    const marketplace = new ethers.Contract(
+      marketplaceContract,
+      abiMarketplace,
+      signer
+    );
+
+    const dataNFTs = storeNFTs.docs.filter(
+      (doc) => doc.data().tokenId === body.tokenId
+    );
+    const nft = await Promise.all(
+      dataNFTs.map(async (item) => {
+        const result = await contract.functions.tokenURI(item.data().tokenId);
+        const resultPrice = await marketplace.functions.priceFromTokenId(
+          item.data().tokenId
+        );
+        const wei = web3.utils.toBN(resultPrice[0]["_hex"]).toString();
+        const eth = ethers.utils.formatEther(wei);
+        return {
+          ...item.data(),
+          tokenURI: result,
+          price: item.data().statusSale ? eth : "",
+        };
+      })
+    );
+
     await storeUsers.doc(address).set({
       address: data.data().address,
       name: data.data().name,
@@ -108,8 +141,10 @@ const addFavoriteNFTService = async (address, body) => {
         ...data.data().favoriteNFT,
         {
           tokenId: body.tokenId,
-          nameNFT: NFT.nameNFT,
-          category: NFT.category,
+          nameNFT: nft[0].nameNFT,
+          category: nft[0].category,
+          tokenURI: nft[0].tokenURI,
+          price: nft[0].price,
         },
       ],
       friendList: data.data().friendList,
