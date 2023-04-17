@@ -3,13 +3,11 @@ const express = require("express");
 const cors = require("cors");
 
 const routes = require("./src/routes");
-import { corsOptions } from "./src/config/allowOrigin";
 
 const app = express();
 app.use(express.json());
-app.use(cors(corsOptions));
 
-app.use(cors());
+app.use(cors({ origin: "https://nft-marketplace-frontend.web.app/" }));
 
 app.get("/", (_, response) => {
   response.status(200).send({ message: "NFT Marketplace!" });
